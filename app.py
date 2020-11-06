@@ -6,6 +6,9 @@ def index_page_landing():
 @app.route('/book')
 def hello_world():
    return render_template('book.html')
+@app.route('/add-review')
+def add_review():
+   return render_template('addReview.html')
 
 if __name__ == "__main__":
     app.run()
