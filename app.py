@@ -9,6 +9,12 @@ def hello_world():
 @app.route('/add-review')
 def add_review():
    return render_template('addReview.html')
+@app.route('/correlation')
+def correlation():
+   return render_template('correlation.html')
+@app.route('/tf-idf')
+def tf_idf():
+   return render_template('tf-idf.html')
 
 if __name__ == "__main__":
     app.run()
