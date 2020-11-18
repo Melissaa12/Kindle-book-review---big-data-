@@ -24,9 +24,9 @@ print("Creating {}".format(stack_name))
 response = cloud_formation_client.create_stack(
     StackName=stack_name,
     Parameters=[{
-        'ParameterKey':"KeyName",
-        'ParameterValue':sys.argv[4]
-    },],
+        'KeyName':sys.argv[4]
+    },
+    ],
     TemplateBody=content
 )
 sleep(120)
