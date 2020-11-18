@@ -1,0 +1,178 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "63377f33-1924-4bf6-8ca9-c883116f7cb2": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 651,
+                    "y": 192
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "7fcec0f9-582e-4083-b089-0b05371187ce": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 420,
+                    "y": 130
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "63377f33-1924-4bf6-8ca9-c883116f7cb2"
+                ]
+            },
+            "9892f9d7-d2ae-4b7c-9608-bc478d3e8e53": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 580,
+                    "y": 330
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "63377f33-1924-4bf6-8ca9-c883116f7cb2"
+                ]
+            },
+            "21909f27-4cb0-472d-a13a-71948b1bc034": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 953,
+                    "y": 150
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "63377f33-1924-4bf6-8ca9-c883116f7cb2"
+                ]
+            }
+        }
+    },
+    "Resources": {
+        "MongoDB": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7fcec0f9-582e-4083-b089-0b05371187ce"
+                }
+            },
+            "DependsOn": [
+                "Security"
+            ]
+        },
+        "MySQL": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "9892f9d7-d2ae-4b7c-9608-bc478d3e8e53"
+                }
+            },
+            "DependsOn": [
+                "Security"
+            ]
+        },
+        "Web": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "21909f27-4cb0-472d-a13a-71948b1bc034"
+                }
+            },
+            "DependsOn": [
+                "Security"
+            ]
+        },
+        "Security": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow HTTP and SSH Connections",
+                "GroupName": "SecurityRules",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIP": "0.0.0.0/0",
+                        "FromPort": 22,
+                        "IpProtocol": "tcp",
+                        "ToPort": 22
+                    },
+                    {
+                        "CidrIP": "::/0",
+                        "FromPort": 22,
+                        "IpProtocol": "tcp",
+                        "ToPort": 22
+                    },
+                    {
+                        "CidrIP": "::/0",
+                        "FromPort": 3306,
+                        "IpProtocol": "tcp",
+                        "ToPort": 3306
+                    },
+                    {
+                        "CidrIP": "0.0.0.0/0",
+                        "FromPort": 3306,
+                        "IpProtocol": "tcp",
+                        "ToPort": 3306
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "63377f33-1924-4bf6-8ca9-c883116f7cb2"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "WebIP": {
+            "Description": "Public IP of Webserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Web",
+                    "PublicIp"
+                ]
+            }
+        },
+        "MongoIP": {
+            "Description": "Public IP of Mongoserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MongoDB",
+                    "PublicIp"
+                ]
+            }
+        },
+        "MySQLIP": {
+            "Description": "Public IP of MYSQLserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MySQL",
+                    "PublicIp"
+                ]
+            }
+        }
+    }
+}
