@@ -50,5 +50,9 @@ def hello_world(asin):
 def add_review():
    return render_template('addReview.html')
 
+@app.route('/book')
+def book():
+   return render_template('book.html')
+
 if __name__ == "__main__":
     app.run(debug=True)

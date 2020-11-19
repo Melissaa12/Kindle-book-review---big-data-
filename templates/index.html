@@ -66,104 +66,44 @@
                 </div>
               </div>
 
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
+              //3 cards
+              {% for reviewed in reviewed %}
+                <div class="col-md-3" style="float:left">
+                  <div class="card mb-2">
+                    <img class="card-img-top"
+                      src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
+                    <div class="card-body">
+                      <h5 class="card-title">{{Book_title}}</h5>
+                      <p class="card-text">{{Review}}</p>
+                        <a href="book" class="stretched-link"></a>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-               <div class="col-md-3" style="float:left">
-               <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                      <h5 class="card-title">Book title</h5>
-                      <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-            </div>
+              {% endfor %}
             <!--/.First slide-->
 
             <!--Second slide-->
             <div class="carousel-item">
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
+              //4 cards
+              {% for reviewed in reviewed %}
+                <div class="col-md-3" style="float:left">
+                  <div class="card mb-2">
+                    <img class="card-img-top"
+                      src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
+                    <div class="card-body">
+                      <h5 class="card-title">{{Book_title}}</h5>
+                      <p class="card-text">{{Review}}</p>
+                        <a href="book" class="stretched-link"></a>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(48).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
+              {% endfor %}
 
             </div>
             <!--/.Second slide-->
-
-
-
           </div>
           <!--/.Slides-->
           <br/>
-
         </div>
         <!--/.Carousel Wrapper-->
     </div>
@@ -192,86 +132,18 @@
             <br/>
 
         <div class="row row-cols-1 row-cols-md-5">
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
+          {% for reviews in reviews%}
             <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
+              <div class="card">
+                <img src="{{ img }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">{{Book_title}}</h5>
+                  <p class="card-text">{{Review}}</p>
+                    <a href="book" class="stretched-link"></a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
         </div>
         <button type="button" class="btn btn-secondary btn-block">See more</button>
     </div>
