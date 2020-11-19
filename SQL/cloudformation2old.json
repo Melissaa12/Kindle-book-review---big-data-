@@ -31,6 +31,18 @@
     },
     "Metadata": {
         "AWS::CloudFormation::Designer": {
+            "63377f33-1924-4bf6-8ca9-c883116f7cb2": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 660,
+                    "y": 180
+                },
+                "z": 1,
+                "embeds": []
+            },
             "7fcec0f9-582e-4083-b089-0b05371187ce": {
                 "size": {
                     "width": 60,
@@ -42,9 +54,6 @@
                 },
                 "z": 1,
                 "embeds": [],
-                "isassociatedwith": [
-                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40"
-                ],
                 "dependson": [
                     "63377f33-1924-4bf6-8ca9-c883116f7cb2"
                 ]
@@ -60,9 +69,6 @@
                 },
                 "z": 1,
                 "embeds": [],
-                "isassociatedwith": [
-                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40"
-                ],
                 "dependson": [
                     "63377f33-1924-4bf6-8ca9-c883116f7cb2"
                 ]
@@ -78,9 +84,6 @@
                 },
                 "z": 1,
                 "embeds": [],
-                "isassociatedwith": [
-                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40"
-                ],
                 "dependson": [
                     "63377f33-1924-4bf6-8ca9-c883116f7cb2"
                 ]
@@ -105,61 +108,47 @@
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
                 "InstanceType": "t2.medium",
-                "SecurityGroups": [
-                    {
-                        "Ref": "InstanceSecurityGroup"
-                    }
-                ],
-                "KeyName": {
-                    "Ref": "KeyName"
-                }
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+                "KeyName" : { "Ref" : "KeyName" }
             },
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "7fcec0f9-582e-4083-b089-0b05371187ce"
                 }
             }
+
         },
         "MySQL": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
                 "InstanceType": "t2.medium",
-                "SecurityGroups": [
-                    {
-                        "Ref": "InstanceSecurityGroup"
-                    }
-                ],
-                "KeyName": {
-                    "Ref": "KeyName"
-                }
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+                "KeyName" : { "Ref" : "KeyName" }
             },
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "9892f9d7-d2ae-4b7c-9608-bc478d3e8e53"
                 }
             }
+
         },
         "Web": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
                 "InstanceType": "t2.medium",
-                "SecurityGroups": [
-                    {
-                        "Ref": "InstanceSecurityGroup"
-                    }
-                ],
-                "KeyName": {
-                    "Ref": "KeyName"
-                }
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+                "KeyName" : { "Ref" : "KeyName" }
             },
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "21909f27-4cb0-472d-a13a-71948b1bc034"
                 }
             }
+
         },
+
         "InstanceSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -173,17 +162,11 @@
                             "Ref": "SSHLocation"
                         }
                     },
-                    {
+                                        {
                         "CidrIp": "0.0.0.0/0",
                         "FromPort": 22,
                         "IpProtocol": "tcp",
                         "ToPort": 22
-                    },
-                    {
-                        "CidrIp": "0.0.0.0/0",
-                        "FromPort": 80,
-                        "IpProtocol": "tcp",
-                        "ToPort": 80
                     },
                     {
                         "CidrIp": "0.0.0.0/0",
