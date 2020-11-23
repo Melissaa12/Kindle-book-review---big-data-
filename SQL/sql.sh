@@ -8,7 +8,7 @@ echo "mysql-server mysql-server/root_password password pass" | sudo debconf-set-
 echo "mysql-server mysql-server/root_password_again password pass" | sudo debconf-set-selections
 sudo apt-get -y install mysql-server
 sudo apt-get -y install zip unzip
-ssh -o StrictHostKeyChecking=no ubuntu@$1 -i /Users/ryan/Desktop/DBProject/dbproject.pem
+ssh -o StrictHostKeyChecking=no ubuntu@$1 -i $2
 echo "now go to mysql"
 wget https://istd50043.github.io/assets/scripts/get_data.sh
 chmod +x get_data.sh

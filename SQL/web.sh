@@ -9,5 +9,7 @@ export LC_ALL=C
 pip3 install flask
 git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git
 cd DBProject
-python app.py
 echo "please enter this in your browser"
+echo "$1:3306"
+python app.py
+

@@ -79,7 +79,7 @@ print(MySQLIP)
 # # stdin, stdout, stderr = ssh.exec_command("echo 'y'")
 # print('stdout:', stdout.read())
 # print('stderr:', stderr.read())
-# subprocess.call(['bash','sqlbash.sh',MySQLIP,sys.argv[4]])
+subprocess.call(['bash','sqlbash.sh',MySQLIP,sys.argv[4]])
 # setting up the web server
 print(MongoIP)
 print("hi")
