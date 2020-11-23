@@ -24,7 +24,7 @@
     </nav>
 
 
-      <form id="regForm" action="">
+      <form id="regForm" method="POST" action="{{url_for('search')}}">
 
         <h2>tf-idf</h2>
         <br/>
@@ -32,11 +32,11 @@
             <div class="form-group row">
                 <label for="search" class="col-sm-2 col-form-label">search</label>
                 <div class="col-sm-10">
-                  <input type="search" class="form-control" id="search">
+                  <input type="search" class="form-control" id="search" name="tfidfword">
                 </div>
             </div>
             <div style="float:right;">
-            <button type="button" class="btn btn-dark">Calculate</button>
+            <button type="submit" class="btn btn-dark">Calculatee</button>
           </div>
         </div>
       </form>
