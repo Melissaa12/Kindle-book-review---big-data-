@@ -3,6 +3,7 @@ from flask_restful import Api, Resource, reqparse
 import json
 import jinja2
 from data import GetBookDetails
+from reviews import GetReviewData
 
 #data = {'1603420304':{'description': "In less time and for less money than it takes to order pizza, you can make it yourself!Three harried but heatlh-conscious college students compiled and tested this collection of more than 200 tasty, hearty, inexpensive recipes anyone can cook -- yes, anyone!Whether you're short on cash, fearful of fat, counting your calories, or just miss home cooking, The Healthy College Cookbook offers everything you need to make good food yourself.", 'price': 7.69, 'imUrl': 'http://ecx.images-amazon.com/images/I/51IEqPrF%2B9L._BO2,204,203,200_PIsitb-sticker-v3-big,TopRight,0,-55_SX278_SY278_PIkin4,BottomRight,1,22_AA300_SH20_OU01_.jpg', 'related': {'also_viewed': ['B001OLRKLQ', 'B004J35JIC', 'B00505UP8M', 'B004GTLKEQ', 'B005KWMS8U', 'B00BS03TYU', 'B001MT5NXW', 'B00A86JE3K', 'B00D694Y9U', 'B00DSVUVXY', 'B008EN3W6Y', 'B00BS03W5Q', 'B008161J1O', 'B0089LOJH2', 'B00ENSBJYQ', 'B00C7C040U', 'B00DH410VY', 'B00CMVFW4O', 'B00C89GS1Q', 'B0035FZJ9Y', 'B004GTLFUK', 'B00H24WT2E', 'B00CVS44OW', 'B00C5W32QK', 'B00HY0KTPK', 'B00BJ8IPJU', 'B00JEOMV1E', 'B0041KKLNQ', 'B00CVS2JYY', 'B00CTVOVD0', 'B00ET594CC'], 'buy_after_viewing': ['B004J35JIC', 'B0089LOJH2']}, 'categories': [['Books', 'Cookbooks, Food & Wine', 'Quick & Easy'], ['Books', 'Cookbooks, Food & Wine', 'Special Diet'], ['Books', 'Cookbooks, Food & Wine', 'Vegetarian & Vegan', 'Non-Vegan Vegetarian'], ['Kindle Store', 'Kindle eBooks', 'Cookbooks, Food & Wine', 'Quick & Easy'], ['Kindle Store', 'Kindle eBooks', 'Cookbooks, Food & Wine', 'Special Diet', 'Healthy'], ['Kindle Store', 'Kindle eBooks', 'Cookbooks, Food & Wine', 'Vegetables & Vegetarian']]},
         #'B0002IQ15S':{'categories': [['Kindle Store', 'Kindle Accessories', 'Power Adapters', 'Kindle (1st Generation) Adapters']], 'description': "This universal DC adapter powers/charges portable electronic devices such as mobile phones, handhelds/PDAs, digital cameras and MP3 players.  Utilizing interchangeable itips, iGo AutoPower powers/charges virtually all of your portable electronic devices from any standard auto power outlet eliminating the need to carry multiple power adapters when you're mobile.Main FeaturesManufacturer: Mobility Electronics, IncManufacturer Part Number: PS0221-10Manufacturer Website Address: www.mobilityelectronics.comProduct Type: Power AdapterInput Voltage: 11.5 V DC to 16 V DCOutput Power: 15WWeight: 3.6 ozStandard Warranty: 2 Year(s) Limited", 'title': 'Mobility IGO AUTOPOWER 3000 SERIES ( PS0221-10 )', 'price': 19.99, 'salesRank': {}, 'imUrl': 'http://ecx.images-amazon.com/images/I/21QFJM28NGL.jpg', 'related': {'also_viewed': ['B00511PS3C', 'B000PI17MM', 'B0016L6OWK', 'B006BGZJJ4', 'B005DOKHLK', 'B001W1XT6I', 'B003YLMAC8', 'B00EXIGQFS', 'B000QSPO3Y', 'B001W1TZTS', 'B00115PYGS', 'B001W1XT5O', 'B002GJQ7AU', 'B00EOE6COQ', 'B0012J52OC', 'B001007OUI', 'B00F3HH2HY', 'B00CGIVV5C', 'B00GA567M4', 'B002WCCQQA', 'B006GWO5NE', 'B006GWO5WK', 'B007HCCNJU', 'B00BHJRYYS'], 'buy_after_viewing': ['B006GWO5WK', 'B001N2LHHO', 'B006GWO5NE', 'B0012J52OC']}},
@@ -38,21 +39,17 @@ def index_page_landing():
 @app.route('/book/<string:asin>')
 def hello_world(asin):
    #api.add_resource(BookDetail,'/book/<string:asin>')
+   reviews = []
    c = GetBookDetails()
-   data = c.get(asin)
-   print("data:", data)
-   #data = GetBookDetails(asin)
-   #print(data[asin]['reviewerID'])
-   #data2 = (getlistofbooks(asin)) #returns list
-   return render_template('book.html', image = data["imUrl"], description = data["description"])
+   image, overview, recommended = c.get(asin)
+   r = GetReviewData()
+   rating, reviews = r.get(asin)
+   return render_template('book2.html', img = image, overview = overview, recommended = recommended, avg_rating = rating, reviews = reviews)
+   #overview = data["description"]
 
 @app.route('/add-review')
 def add_review():
    return render_template('addReview.html')
-
-@app.route('/book')
-def book():
-   return render_template('book.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

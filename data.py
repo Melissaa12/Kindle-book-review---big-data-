@@ -9,12 +9,27 @@ myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["metadata"]
 mycol = mydb["metada"]
 
-mydb2 = myclient["kindle"]
-mycol = mydb["books"]
+#mydb2 = myclient["kindle"]mycol = mydb["books"]
 
 #x = mycol.find_one()
 
 #print(x)
+def getDetails(asin):
+
+        default_image = '/static/purple.jpg'
+        default_overview = 'Overview not available.'
+        default_recommended = 'Recommended not available'
+
+        cursor = mycol.find_one({"asin": asin})
+        jsonstring = dumps(cursor, default=default)
+        data = json.loads(jsonstring)
+            
+        image = data.get('imUrl')
+        overview = data.get('description')
+        recommended = data.get('related', {}).get('also_bought')
+        #print(recommended)
+
+        return (image or default_image, overview or default_overview, recommended or default_recommended)
 
 class GetBookTitles(Resource):
     #Returns all book titles
@@ -28,13 +43,32 @@ class GetBookTitles(Resource):
 
 class GetBookDetails(Resource):
     #Returns book details based on asin
+    
     def get(self, asin):
-        cursor = mycol.find_one({"asin": asin})
-        jsonstring = dumps(cursor, default=default)
-        return json.loads(jsonstring)
+        try:
+            image, overview, recommended = getDetails(asin)
+            #print(recommended)
+            #print(overview)
+            limit = 0
+            default_recos = "No recs"
+            recommended_images_overviews = []
+            #index, item in zip(range(limit), items):
+            for index, book in zip(range(4), recommended):
+                #limit +=1
+                #print(index, book), "\n"
+                r_image, r_overview, r_recommended = getDetails(book)
+                recommended_images_overviews.append((r_image, r_overview, book))
+                #if limit == 2:
+                    #break
+                #print(recommended_images_overviews, "\n")
+            #print(image, overview, recommended_images_overviews)
+            return (image, overview, recommended_images_overviews or default_recos)
+        
+        except:
+            return {"Message": "Failed to retrieve data"}, 500
 
-#c = GetBookDetails()
-#print(c.get("B000F83SZQ"))
+c = GetBookDetails()
+print(c.get('B000F83SZQ'))
 
 class RegisterNewBook(Resource):
     #Add new book
