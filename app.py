@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect,url_for, flash
 from flask_restful import Api, Resource, reqparse
 import json
 import jinja2
@@ -34,7 +34,7 @@ api = Api(app)
 
 @app.route('/', methods=['GET'])
 def index_page_landing():
-    return render_template('index.html')
+    return render_template('index3.html')
 
 @app.route('/book/<string:asin>')
 def hello_world(asin):
@@ -44,12 +44,34 @@ def hello_world(asin):
    image, overview, recommended = c.get(asin)
    r = GetReviewData()
    rating, reviews = r.get(asin)
-   return render_template('book2.html', img = image, overview = overview, recommended = recommended, avg_rating = rating, reviews = reviews)
+   return render_template('book.html', img = image, overview = overview, recommended = recommended, avg_rating = rating, reviews = reviews)
    #overview = data["description"]
 
-@app.route('/add-review')
+def create_query(a,b,c,d,e):
+    
+    query = ''
+    query = "INSERT INTO kindle (idx, asin, overall, reviewText, reviewerID) VALUES (%s, %s, %s, %s, %s)"
+    values = (982619,0000000, d, e, 'A1F6404F1VG29J')
+    return query,values
+
+@app.route('/add-review',methods =["GET","POST"])
 def add_review():
-   return render_template('addReview.html')
+
+    title = request.args.get('booktitle')
+    genre = request.args.get('genre')
+    image = request.args.get('im_File')
+    rating = request.args.get('inlineRadioOptions')
+    review = request.args.get('review')
+    if title and genre and image and rating and review:
+        insert_query,values = create_query(title,genre,image,rating,review)
+        print(insert_query)
+        r = GetReviewData()
+        r.put(insert_query,values)
+        print("inserted \n")
+        print(r.get(0000000))
+        return redirect('/')
+
+    return render_template('addReview.html') 
 
 if __name__ == "__main__":
     app.run(debug=True)

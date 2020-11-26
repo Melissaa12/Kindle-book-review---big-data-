@@ -4,10 +4,28 @@ from flask_restful import Resource, request, reqparse
 from bson.json_util import dumps, default
 from random import random
 import pymongo
+from urllib.parse import unquote
+import html
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["metadata"]
 mycol = mydb["metada"]
+
+import requests
+
+def getValues(asin):
+
+    r =requests.get('http://3.238.71.18:3306/asin/'+asin)
+    imgUrl = r.text.strip().split("####")[0]
+    overview = r.text.strip().split("####")[1]
+    ab = r.text.strip().split("####")[2]
+    ab = ab.strip("]").strip("[").strip().split(",")
+    ab = [i.strip().strip("u'").strip("'") for i in ab]
+    #overview = unquote(overview)
+    overview = html.unescape(overview)
+    return imgUrl, overview, ab
+
+#print(getValues('B00HZNSXHW'))
 
 #mydb2 = myclient["kindle"]mycol = mydb["books"]
 
@@ -23,23 +41,18 @@ def getDetails(asin):
         cursor = mycol.find_one({"asin": asin})
         jsonstring = dumps(cursor, default=default)
         data = json.loads(jsonstring)
-            
-        image = data.get('imUrl')
-        overview = data.get('description')
-        recommended = data.get('related', {}).get('also_bought')
+        #data = getValues(asin)
+
+        if data != None:
+            #image, overview, recommended = data[0], data[1], data[2]
+            image = data.get('imUrl')
+            overview = data.get('description')
+            recommended = data.get('related', {}).get('also_bought')
+        else:
+            return (["Not available","Not available","Not available"])
         #print(recommended)
 
         return (image or default_image, overview or default_overview, recommended or default_recommended)
-
-class GetBookTitles(Resource):
-    #Returns all book titles
-    def get(self):
-        try:
-            cursor = mycol.find({'title': {'$exists': 1}}, {'_id': 0, 'asin': 1,'title': 1})
-            json_query = json.loads(dumps(cursor, default=default))
-            return {"message": "Successfully retrieve all titles", "titles": json_query}, 200
-        except:
-            return {"message": "Failed to retrieve all titles"}, 500
 
 class GetBookDetails(Resource):
     #Returns book details based on asin
@@ -47,28 +60,22 @@ class GetBookDetails(Resource):
     def get(self, asin):
         try:
             image, overview, recommended = getDetails(asin)
-            #print(recommended)
-            #print(overview)
-            limit = 0
             default_recos = "No recs"
             recommended_images_overviews = []
-            #index, item in zip(range(limit), items):
-            for index, book in zip(range(4), recommended):
-                #limit +=1
-                #print(index, book), "\n"
+            for i in range(min(4,len(recommended))):
+                book = recommended[i]
                 r_image, r_overview, r_recommended = getDetails(book)
                 recommended_images_overviews.append((r_image, r_overview, book))
-                #if limit == 2:
-                    #break
-                #print(recommended_images_overviews, "\n")
-            #print(image, overview, recommended_images_overviews)
+
+            #print(image, overview, recommended_images_overviews or default_recos)
             return (image, overview, recommended_images_overviews or default_recos)
         
         except:
             return {"Message": "Failed to retrieve data"}, 500
 
+#print(getDetails('B00HZNSXHW'))
 c = GetBookDetails()
-print(c.get('B000F83SZQ'))
+print(c.get('B000F83TEQ'))
 
 class RegisterNewBook(Resource):
     #Add new book
