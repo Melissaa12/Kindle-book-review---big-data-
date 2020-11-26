@@ -8,18 +8,18 @@ from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
 from pyspark.sql.functions import udf
-from pyspark.mllib.feature import HashingTF
+# from pyspark.mllib.feature import HashingTF
 
 # from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
 # from pyspark.sql.functions import udf, col
 # from pyspark.sql.types import StringType
 # from pyspark.mllib.feature import HashingTF
 # from pyspark.mllib.feature import IDF
-conf=SparkConf()
-conf.set("spark.driver.memory", "5g")
-sc = SparkContext.getOrCreate(conf)
-sc.setCheckpointDir("hdfs://0.0.0.0:19000/project")
-spark = SparkSession(sc)
+# conf=SparkConf()
+# conf.set("spark.driver.memory", "5g")
+# sc = SparkContext.getOrCreate(conf)
+# sc.setCheckpointDir("hdfs://172.31.23.239/user/kindle_reviews")
+# spark = SparkSession(sc)
 
 app = Flask(__name__)
 @app.route('/', methods=['GET'])
@@ -38,48 +38,74 @@ def correlation():
 def tf_idf():
    return render_template('tf-idf.html')
 
-@app.route('/predict', methods=['POST'])
-def search():
-   #  ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
+# @app.route('/predict', methods=['POST'])
+# def search():
+#    #  ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
 
-    word = request.form['tfidfword']
-    ## csv stored in hadoop 
-    ## use sqoop for data ingestion from sql to csv on hadoop
-    data = spark.read.csv("hdfs://0.0.0.0:19000/project/kindle_reviews.csv", header=True, sep=",")
-    data = data.na.drop(subset=["reviewText"])
+#     wordR = request.form['tfidfword']
+#     ## csv stored in hadoop 
+#     ## use sqoop for data ingestion from sql to csv on hadoop
+#     data = spark.read.csv("hdfs://172.31.23.239/user/kindle_reviews/kindle_reviews.csv", header=True, sep=",")
+#     data = data.na.drop(subset=["reviewText"])
+   
+#     tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
+#     wordsData = tokenizer.transform(data)
 
-    tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
-    wordsData = tokenizer.transform(data)
+#     cv = CountVectorizer(inputCol="words", outputCol="rawFeatures",vocabSize = 2000)
+#     model = cv.fit(wordsData)
+#     featurizedData = model.transform(wordsData)
+#     vocab = model.vocabulary
 
-    cv = CountVectorizer(inputCol="words", outputCol="rawFeatures",vocabSize = 2000)
-    model = cv.fit(wordsData)
-    featurizedData = model.transform(wordsData)
-    vocab = model.vocabulary
+#     idf = IDF(inputCol= "rawFeatures", outputCol="features")
+#     idfModel = idf.fit(featurizedData)
+#     rescaledData = idfModel.transform(featurizedData)
+#     tfidfRow=[]
+#     #get tfidf of each row
+#     def searchFunc (row,vocab,req):
+#        a = {}
+#        index = vocab.index(req)
+#        array = row.toArray()
+#        tfidfWord = 0
+#        for i in range(len(row)):
+#          if (array[i]!=0  ):
+#              tfidf=array[i]
+#              word= vocab[i]
+#              if(word==req):
+#                print(tfidf)
+#                tfidfWord = tfidf
+#                a[word]= tfidf
+#        tfidfRow.append(tfidfWord)
+#        return str(a)
 
-    idf = IDF(inputCol= "rawFeatures", outputCol="features")
-    idfModel = idf.fit(featurizedData)
-    rescaledData = idfModel.transform(featurizedData)
+#     def map_to_word1(row, vocab):
+#       d = {}
+#       array = row.toArray()
+#       # print("testing")
+#       # print(array[0])
+#       # print(vocab[0])
+#       # print(array[1])
+#       # print(vocab[1])
+#       for i in range(len(row)):
+#          if (array[i] != 0):
+#                tfidf = array[i]
+#                word = vocab[i]
+#                d[word] = tfidf
+#       return str(d)
 
-    def map_to_word1(row, vocab):
-      d = {}
-      array = row.toArray()
-      for i in range(len(row)):
-         #check word is not OOV
-         if (array[i] != 0):
-               tfidf = array[i]
-               word = vocab[i]
-               d[word] = tfidf
-      return str(d)
+#     def map_to_word(vocab):
+#       # return udf(lambda row: map_to_word1(row, vocab))
+#       return udf(lambda row: searchFunc(row, vocab, wordR))
 
-    def map_to_word(vocab):
-      return udf(lambda row: map_to_word1(row, vocab))
+#     output0 = rescaledData.withColumn("features", map_to_word(vocab)(rescaledData.features))
 
-    output0 = rescaledData.withColumn("features", map_to_word(vocab)(rescaledData.features))
+    
+#     output = output0.select("asin","features")
+#     print(output.head(3))
+#     print(type(output))
+    
 
 
-    output = output0.select("asin","features")
-    print(output)
-    output.write.format("csv").save("hdfs://0.0.0.0:19000/result")
+   #  output.write.format("csv").save("hdfs://ec2-18-188-200-194.us-east-2.compute.amazonaws.com/result")
 
     #TO DO find most related review and output front end
     
@@ -113,7 +139,7 @@ def search():
    #      bookReview.append(review_text[sortedTfidf[i]])
    #  print(bookTitle)
    #  print(bookReview)
-    return render_template('tfidfresult.html', data="placeholder")
+   #  return render_template('tfidfresult.html', data="placeholder")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
