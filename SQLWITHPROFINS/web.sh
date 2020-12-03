@@ -4,6 +4,8 @@ echo mongoip
 echo $2
 echo sqlip
 echo $3
+echo masterip
+echo $4
 
 
 
@@ -38,5 +40,5 @@ yes Y|sudo apt install openjdk-8-jdk
 cd DBProject
 echo "please enter this in your browser"
 echo "$1:5000"
-python app.py $2 $3
+python app.py $2 $3 $4
 

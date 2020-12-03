@@ -3,7 +3,7 @@ from boto3 import NullHandler
 import json
 # you need the cloud_formation_client for this?
 # why is there a tempfile close below?
-def updateStack(stack_name='DBPJT3' , n =1):
+def updateStack(stack_name='DBPJT3' , n =1,keyname='dbproject'):
  newtemplate = open("finalcloud.json" , 'w')
 
 
@@ -61,7 +61,7 @@ def updateStack(stack_name='DBPJT3' , n =1):
      StackName=stack_name,
      Parameters=[{
          'ParameterKey':"KeyName",
-         'ParameterValue':'rahuleducate1'
+         'ParameterValue':'dbproject'
      },],
      TemplateBody=json.dumps(template)
      )

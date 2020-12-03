@@ -8,8 +8,9 @@ import sys
 stack_name = 'DBPJT3'
 
 # calls tweakStack to create cloudformationjson for number of datanodes indicated
-tweakStack(stack_name,int(sys.argv[5])-2)
+tweakStack(stack_name,int(sys.argv[5]))
 template_file_location = "./testsavenew.json"
+# template_file_location = "./testsave3.json"
 
 # read entire file as yaml
 with open(template_file_location, 'r') as content_file:

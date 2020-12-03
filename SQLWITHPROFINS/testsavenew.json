@@ -354,6 +354,21 @@
                     ]
                 }
             }
+        },
+        "Slave1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium",
+                "SecurityGroups": [
+                    {
+                        "Ref": "DataSecurity"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
         }
     },
     "Outputs": {
@@ -417,6 +432,24 @@
                 "Fn::GetAtt": [
                     "MySQL",
                     "PublicIp"
+                ]
+            }
+        },
+        "Slave1IP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave1",
+                    "PublicIp"
+                ]
+            }
+        },
+        "Slave1PriIP": {
+            "Description": "PrivateIP of Secondaryserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave1",
+                    "PrivateIp"
                 ]
             }
         }

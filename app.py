@@ -19,7 +19,9 @@ from pyspark.sql.functions import length
 conf=SparkConf()
 conf.set("spark.driver.memory", "5g")
 sc = SparkContext.getOrCreate(conf)
-sc.setCheckpointDir("hdfs://0.0.0.0:19000/project")
+masternodeip = sys.argv[3]
+
+sc.setCheckpointDir("hdfs://"+masternodeip+':9000:'+"/project")
 spark = SparkSession(sc)
 
 app = Flask(__name__)
@@ -85,7 +87,7 @@ def search():
    #  ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
 
     wordR = request.form['tfidfword']
-    data = spark.read.csv("hdfs://0.0.0.0:19000/project/kindle_reviews.csv", header=True, sep=",")
+    data = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project/kindle_reviews.csv", header=True, sep=",")
     data = data.na.drop(subset=["reviewText"])
    
     tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
@@ -137,7 +139,7 @@ def search():
 
     output0 = rescaledData.withColumn("features", map_to_word(vocab)(rescaledData.features))
     output = output0.select("asin","features")
-    output.write.format("csv").save("hdfs://0.0.0.0:19000/result2")
+    output.write.format("csv").save("hdfs://"+masternodeip+':9000'+"/result2")
 
     return render_template('tfidfresult.html', data="placeholder")
 
