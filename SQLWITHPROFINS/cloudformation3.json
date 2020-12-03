@@ -119,7 +119,7 @@
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
-                "InstanceType": "t2.medium",
+                "InstanceType": "t2.xlarge",
                 "SecurityGroups": [
                     {
                         "Ref": "InstanceSecurityGroup"
@@ -135,11 +135,56 @@
                 }
             }
         },
-        "Hadoop": {
+        "Secondary": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
-                "InstanceType": "t2.medium",
+                "InstanceType": "t2.xlarge",
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
+        },
+        "Slave1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.xlarge",
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
+        },
+        "Slave2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.xlarge",
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+        }
+        },
+        "Master": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.xlarge",
                 "SecurityGroups": [
                     {
                         "Ref": "InstanceSecurityGroup"
@@ -251,15 +296,89 @@
                 ]
             }
         },
-        "DataIP": {
+        "MasterIP": {
             "Description": "Public IP of Dataserver",
             "Value": {
                 "Fn::GetAtt": [
-                    "Hadoop",
+                    "Master",
                     "PublicIp"
                 ]
+
             }
         },
+        "Masterdns": {
+            "Description": "Public dns of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Master",
+                    "PrivateIp"
+                ]
+
+            }
+        },
+
+        "SecondaryIP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Secondary",
+                    "PublicIp"
+                ]
+
+            }
+        },
+        "Secondarydns": {
+            "Description": "Public dns of Secondaryserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Secondary",
+                    "PrivateIp"
+                ]
+
+            }
+        },
+        "Slave1IP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave1",
+                    "PublicIp"
+                ]
+
+            }
+        },
+        "Slave1dns": {
+            "Description": "Public dns of slave1server",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave1",
+                    "PrivateIp"
+                ]
+
+            }
+        },
+
+        "Slave2IP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave2",
+                    "PublicIp"
+                ]
+
+            }
+        },
+        "Slave2dns": {
+            "Description": "Public dns of Slave2server",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave2",
+                    "PrivateIp"
+                ]
+
+            }
+        },
+
         "MongoIP": {
             "Description": "Public IP of Mongoserver",
             "Value": {

@@ -9,17 +9,24 @@ from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
 from pyspark.sql.functions import udf
 from pyspark.mllib.feature import HashingTF
+import sys
 
+print('This is the mongo public IP Address' +  sys.arg[2])
+mongopublicip = sys.arg[2]
+mongopublicipadd = 'http://' + mongopublicip + '/asin/'
+
+print('This is the sql public IP Address' +  sys.arg[1])
+sqlpublicip = sys.arg[1]
 # from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
 # from pyspark.sql.functions import udf, col
 # from pyspark.sql.types import StringType
 # from pyspark.mllib.feature import HashingTF
 # from pyspark.mllib.feature import IDF
-conf=SparkConf()
-conf.set("spark.driver.memory", "5g")
-sc = SparkContext.getOrCreate(conf)
-sc.setCheckpointDir("hdfs://0.0.0.0:19000/project")
-spark = SparkSession(sc)
+# conf=SparkConf()
+# conf.set("spark.driver.memory", "5g")
+# sc = SparkContext.getOrCreate(conf)
+# sc.setCheckpointDir("hdfs://0.0.0.0:19000/project")
+# spark = SparkSession(sc)
 
 app = Flask(__name__)
 @app.route('/', methods=['GET'])

@@ -1,9 +1,9 @@
 sudo apt-get update
 sudo apt-get install git
 echo mongoip
-echo $1
-echo sqlip
 echo $2
+echo sqlip
+echo $3
 
 
 
@@ -37,6 +37,6 @@ yes Y|sudo apt install openjdk-8-jdk
 
 cd DBProject
 echo "please enter this in your browser"
-echo "$0:3306"
-python app.py $2 $1
+echo "$1:5000"
+python app.py $2 $3
 

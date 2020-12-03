@@ -37,8 +37,8 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 420,
-                    "y": 120
+                    "x": 690,
+                    "y": 50
                 },
                 "z": 1,
                 "embeds": [],
@@ -55,8 +55,8 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 570,
-                    "y": 330
+                    "x": 690,
+                    "y": 340
                 },
                 "z": 1,
                 "embeds": [],
@@ -74,7 +74,7 @@
                 },
                 "position": {
                     "x": 960,
-                    "y": 150
+                    "y": 210
                 },
                 "z": 1,
                 "embeds": [],
@@ -91,8 +91,8 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 360,
-                    "y": 270
+                    "x": 690,
+                    "y": 210
                 },
                 "z": 1,
                 "embeds": []
@@ -109,8 +109,69 @@
                 "z": 1,
                 "embeds": [],
                 "isassociatedwith": [
-                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40"
+                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40",
+                    "0eccebb7-2f03-4dd6-8f75-eab57f6e82ca"
                 ]
+            },
+            "af2fcc60-bfc0-4908-9ce0-3e2c30942e70": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 150,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40",
+                    "0eccebb7-2f03-4dd6-8f75-eab57f6e82ca"
+                ]
+            },
+            "b50fbb66-28eb-4be4-9b57-f23a6ee99712": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 270,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40",
+                    "0eccebb7-2f03-4dd6-8f75-eab57f6e82ca"
+                ]
+            },
+            "e5e7f947-f48b-4f00-bdeb-4487adfd4b1f": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 510,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "2c966b39-8789-4565-bb2b-9c7f81ddaf40",
+                    "0eccebb7-2f03-4dd6-8f75-eab57f6e82ca"
+                ]
+            },
+            "0eccebb7-2f03-4dd6-8f75-eab57f6e82ca": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 210,
+                    "y": 340
+                },
+                "z": 1,
+                "embeds": []
             }
         }
     },
@@ -135,14 +196,34 @@
                 }
             }
         },
-        "Hadoop": {
+        "Slave0": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
                 "InstanceType": "t2.medium",
                 "SecurityGroups": [
                     {
-                        "Ref": "InstanceSecurityGroup"
+                        "Ref": "DataSecurity"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e5e7f947-f48b-4f00-bdeb-4487adfd4b1f"
+                }
+            }
+        },
+        "Master": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.xlarge",
+                "SecurityGroups": [
+                    {
+                        "Ref": "DataSecurity"
                     }
                 ],
                 "KeyName": {
@@ -239,6 +320,40 @@
                     "id": "2c966b39-8789-4565-bb2b-9c7f81ddaf40"
                 }
             }
+        },
+        "DataSecurity": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Data Security Group",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": 22,
+                        "ToPort": 22
+                    }
+                ]
+            }
+        },
+        "SGBaseIngress": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "GroupId": {
+                    "Fn::GetAtt": [
+                        "DataSecurity",
+                        "GroupId"
+                    ]
+                },
+                "IpProtocol": -1,
+                "FromPort": -1,
+                "ToPort": -1,
+                "SourceSecurityGroupId": {
+                    "Fn::GetAtt": [
+                        "DataSecurity",
+                        "GroupId"
+                    ]
+                }
+            }
         }
     },
     "Outputs": {
@@ -251,12 +366,39 @@
                 ]
             }
         },
-        "DataIP": {
-            "Description": "Public IP of Dataserver",
+        "MasterIP": {
+            "Description": "Public IP of Masterserver",
             "Value": {
                 "Fn::GetAtt": [
-                    "Hadoop",
+                    "Master",
                     "PublicIp"
+                ]
+            }
+        },
+        "MasterPriIP": {
+            "Description": "PrivateIP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Master",
+                    "PrivateIp"
+                ]
+            }
+        },
+        "Slave0IP": {
+            "Description": "Public IP of Datanode0",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave0",
+                    "PublicIp"
+                ]
+            }
+        },
+        "Slave0PriIP": {
+            "Description": "PrivateIP of Secondaryserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave0",
+                    "PrivateIp"
                 ]
             }
         },

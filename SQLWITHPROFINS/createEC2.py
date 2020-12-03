@@ -1,25 +1,23 @@
 from re import template
 import boto3, yaml, json
-import sys
+from tweakJson import tweakStack
 # file must in the same dir as script
 import json
 from time import sleep
+import sys
 stack_name = 'DBPJT3'
-template_file_location = "./testsave3.json"
 
-# # read entire file as yaml
+# calls tweakStack to create cloudformationjson for number of datanodes indicated
+tweakStack(stack_name,int(sys.argv[5])-2)
+template_file_location = "./testsavenew.json"
+
+# read entire file as yaml
 with open(template_file_location, 'r') as content_file:
     content = json.load(content_file)
-
-# convert yaml to json string
-# content = json.dumps(content)
-
 content = json.dumps(content)
-print(sys.argv[1])
-# if use educate account
+
+# creates the stack with all EC2 instances
 cloud_formation_client = boto3.client('cloudformation',aws_access_key_id= sys.argv[1],aws_secret_access_key=sys.argv[2],aws_session_token=sys.argv[3],region_name="us-east-1")
-# Paid Account
-# cloud_formation_client = boto3.client('cloudformation')
 print("Creating {}".format(stack_name))
 response = cloud_formation_client.create_stack(
     StackName=stack_name,
@@ -29,5 +27,6 @@ response = cloud_formation_client.create_stack(
     },],
     TemplateBody=content
 )
+#Sleep wait so as to wait for the stack to finish instantiation
 sleep(150)
 print(response)

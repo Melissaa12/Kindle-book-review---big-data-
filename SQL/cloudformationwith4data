@@ -135,7 +135,52 @@
                 }
             }
         },
-        "Hadoop": {
+        "Secondary": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium",
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
+        },
+        "Slave1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium",
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
+        },
+        "Slave2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium",
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+        }
+        },
+        "Master": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
                 "ImageId": "ami-0f82752aa17ff8f5d",
@@ -251,11 +296,38 @@
                 ]
             }
         },
-        "DataIP": {
+        "MasterIP": {
             "Description": "Public IP of Dataserver",
             "Value": {
                 "Fn::GetAtt": [
-                    "Hadoop",
+                    "Master",
+                    "PublicIp"
+                ]
+            }
+        },
+        "SecondaryIP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Secondary",
+                    "PublicIp"
+                ]
+            }
+        },
+        "Slave1IP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave1",
+                    "PublicIp"
+                ]
+            }
+        },
+        "Slave2IP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave2",
                     "PublicIp"
                 ]
             }
