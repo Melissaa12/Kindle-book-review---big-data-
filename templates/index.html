@@ -35,137 +35,21 @@
 
     <div style="padding: 60px;">
         <h2 style="padding-left: 35px">Your reviews</h2>
-        <!--Carousel Wrapper-->
-        <div id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" style="padding: 20px;">
-          <!--Controls-->
-          <div class="controls-top">
-            <a class="btn-floating" href="#multi-item-example" data-slide="prev"><i class="fas fa-chevron-left"></i></a>
-            <a class="btn-floating" href="#multi-item-example" data-slide="next"><i
-                class="fas fa-chevron-right"></i></a>
-          </div>
-          <!--/.Controls-->
-          <!--Indicators-->
-          <ol class="carousel-indicators">
-            <li data-target="#multi-item-example" data-slide-to="0" class="active" style="background-color: black;"></li>
-            <li data-target="#multi-item-example" data-slide-to="1" style="background-color: black;"></li>
-
-          </ol>
-          <!--/.Indicators-->
-          <!--Slides-->
-          <div class="carousel-inner" role="listbox">
-            <!--First slide-->
-            <div class="carousel-item active">
-
-              <div class="col-md-3" style="float:left">
-               <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="/static/plus.png" alt="Card image cap">
-                  <div class="card-body">
-                      <a href="add-review" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-               <div class="col-md-3" style="float:left">
-               <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                      <h5 class="card-title">Book title</h5>
-                      <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
+        <div class="row row-cols-1 row-cols-md-5">
+          {% for reviews in reviews%}
+            <div class="col mb-4">
+              <div class="card">
+                <img src="{{ img }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">{{Book_title}}</h5>
+                  <p class="card-text">{{Review}}</p>
+                    <a href="book" class="stretched-link"></a>
                 </div>
               </div>
             </div>
-            <!--/.First slide-->
-
-            <!--Second slide-->
-            <div class="carousel-item">
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(48).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3" style="float:left">
-                <div class="card mb-2">
-                  <img class="card-img-top"
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
-                  <div class="card-body">
-                    <h5 class="card-title">Book title</h5>
-                    <p class="card-text">Review</p>
-                      <a href="book" class="stretched-link"></a>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-            <!--/.Second slide-->
-
-
-
-          </div>
-          <!--/.Slides-->
-          <br/>
-
+          {% endfor %}
         </div>
-        <!--/.Carousel Wrapper-->
+        <button type="button" class="btn btn-secondary btn-sm" href="your_reviews">See all</button>
     </div>
 
 
@@ -181,97 +65,46 @@
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Sort by
                   </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                  </div>
+                  <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                    <li class="dropdown-item"><a href="#">Rating</a></li>
+                    <li class="dropdown-submenu">
+                      <a  class="dropdown-item" href="#">Genre</a>
+                      <ul class="dropdown-menu">
+                        <li class="dropdown-submenu">
+                          <a class="dropdown-item" href="#">Books</a>
+                          <ul class="dropdown-menu">
+                              <li class="dropdown-item"><a href="#">Literature & Fiction</a></li>
+                            <li class="dropdown-item"><a href="#">Mystery, Thriller & Suspense</a></li>
+                            <li class="dropdown-item"><a href="#">Thriller & Suspense</a></li>
+                            <li class="dropdown-item"><a href="#">Suspense</a></li>
+                          </ul>
+                        </li>
+                        <li class="dropdown-submenu">
+                          <a class="dropdown-item" href="#">Kindle Store</a>
+                          <ul class="dropdown-menu">
+                              <li class="dropdown-item"><a href="#">Literature & Fiction</a></li>
+                          </ul>
+                      </ul>
+                    </li>
+                  </ul>
                 </div>
             </div>
           </div>
             <br/>
 
         <div class="row row-cols-1 row-cols-md-5">
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
+          {% for reviews in reviews%}
             <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
+              <div class="card">
+                <img src="{{ img }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">{{Book_title}}</h5>
+                  <p class="card-text">{{Review}}</p>
+                    <a href="book" class="stretched-link"></a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-4">
-            <div class="card">
-              <img src="/static/purple.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <h5 class="card-title">Book title</h5>
-                <p class="card-text">Review</p>
-                  <a href="book" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
         </div>
         <button type="button" class="btn btn-secondary btn-block">See more</button>
     </div>
@@ -282,3 +115,53 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
+
+<style lang="css">
+ .dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+</style>

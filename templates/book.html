@@ -25,15 +25,13 @@
     <div class="container" style="padding-top: 60px">
       <div class="row">
         <div class="col-sm">
-          <img src="/static/purple.jpg" class="card-img-top" alt="...">
+          <img src="{{ img }}" class="card-img-top" alt="...">
         </div>
         <div class="col-sm">
-            <h2>Book title</h2>
-            <p style="color:grey">By Author</p>
-            <div class="rating">
-                <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
-            </div>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            <h2>{{ Book_title }}</h2>
+            <p style="color:grey">{{ Author }}</p>
+            <div class="rating"> {{ avg_rating }} </div>
+            <p>{{ overview }}</p>
         </div>
         <div class="col-sm">
             <p>Rate this book</p>
@@ -48,110 +46,22 @@
     </div>
 
     <div class="row" style="padding-left: 100px; padding-top: 40px">
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
+        {% for review in reviews if reviews %}
+            <div class="card mb-4" style="width: 18rem; margin: 20px;">
+              <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-4">
+                        <img src="{{ img }}" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
+                    </div>
+                    <div class="col-sm-8">
+                        <h5 class="card-title">{{review[0]}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{review[1]}}</h6>
+                    </div>
+                  </div>
+                <p class="card-text">{{review[2]}}</p>
               </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
-
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
-              </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
-
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
-              </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
-
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
-              </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
-
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
-              </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
-
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
-              </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
-
-        <div class="card mb-4" style="width: 18rem; margin: 20px;">
-          <div class="card-body">
-              <div class="row">
-                <div class="col-sm-4">
-                    <img src="/static/purple.jpg" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
-                </div>
-                <div class="col-sm-8">
-                    <h5 class="card-title">Username</h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span></h6>
-                </div>
-              </div>
-            <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer</p>
-          </div>
-        </div>
+            </div>
+        {% endfor %}
 
         <div style="padding: 60px;">
             <h2 style="padding-left: 35px">Recommended</h2>
@@ -175,117 +85,39 @@
               <div class="carousel-inner" role="listbox">
                 <!--First slide-->
                 <div class="carousel-item active">
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
+                    {% for recommended in recommended%}
+                      <div class="col-md-3" style="float:left">
+                        <div class="card mb-2">
+                          <img class="card-img-top" src="{{ recommended[0] }}" alt="Card image cap">
+                          <div class="card-body">
+                            <h5 class="card-title">{{ Book_title }}</h5>
+                            <p class="card-text">{{ recommended[1] }}</p>
+                              <a href="{{recommended[2]}}" class="stretched-link"></a>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
-                      </div>
-                    </div>
-                  </div>
-
-                   <div class="col-md-3" style="float:left">
-                   <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                      <div class="card-body">
-                          <h5 class="card-title">Book title</h5>
-                          <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    {% endfor %}
                 <!--/.First slide-->
 
                 <!--Second slide-->
                 <div class="carousel-item">
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(60).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
+                  {% for recommended in recommended %}
+                      <div class="col-md-3" style="float:left">
+                        <div class="card mb-2">
+                          <img class="card-img-top" src="{{ recommended[0] }}" alt="Card image cap">
+                          <div class="card-body">
+                            <h5 class="card-title">{{ Book_title }}</h5>
+                            <p class="card-text">{{ recommended[1] }}</p>
+                              <a href={{recommended[2]}} class="stretched-link"></a>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(48).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-3" style="float:left">
-                    <div class="card mb-2">
-                      <img class="card-img-top"
-                        src="https://mdbootstrap.com/img/Photos/Horizontal/City/4-col/img%20(47).jpg" alt="Card image cap">
-                      <div class="card-body">
-                        <h5 class="card-title">Book title</h5>
-                        <p class="card-text">Review</p>
-                          <a href="book" class="stretched-link"></a>
-                      </div>
-                    </div>
-                  </div>
-
+                    {% endfor %}
                 </div>
                 <!--/.Second slide-->
-
-
-
               </div>
               <!--/.Slides-->
               <br/>
-
             </div>
             <!--/.Carousel Wrapper-->
         </div>
