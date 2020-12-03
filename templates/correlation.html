@@ -24,7 +24,7 @@
     </nav>
 
 
-      <form id="regForm" action="">
+      <form id="regForm" method="POST" action="{{url_for('corr')}}">
 
         <h2>Correlation</h2>
         <br/>
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div style="float:right;">
-            <button type="button" class="btn btn-dark">Calculate</button>
+            <button type="submit" class="btn btn-dark">Calculate</button>
           </div>
         </div>
       </form>
