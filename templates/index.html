@@ -36,13 +36,13 @@
     <div style="padding: 60px;">
         <h2 style="padding-left: 35px">Your reviews</h2>
         <div class="row row-cols-1 row-cols-md-5">
-          {% for reviews in reviews%}
+          {% for review in reviews%}
             <div class="col mb-4">
               <div class="card">
-                <img src="{{ img }}" class="card-img-top" alt="...">
+                <img src="{{review[0]}}" class="card-img-top" alt="...">
                 <div class="card-body">
                   <h5 class="card-title">{{Book_title}}</h5>
-                  <p class="card-text">{{Review}}</p>
+                  <p class="card-text">{{review[1]}}</p>
                     <a href="book" class="stretched-link"></a>
                 </div>
               </div>

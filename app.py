@@ -21,14 +21,15 @@ import requests
 import sys
 
 
-print('This is the mongo public IP Address' +  sys.argv[2])
-mongopublicip = sys.argv[1]
-mongopublicipadd = 'http://' + mongopublicip + '/asin/'
+#print('This is the mongo public IP Address' +  sys.argv[2])
+#mongopublicip = sys.argv[1]
+#mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-print('This is the sql public IP Address' +  sys.argv[1])
-sqlpublicip = sys.argv[2]
+#print('This is the sql public IP Address' +  sys.argv[1])
+#sqlpublicip = sys.argv[2]
 
-
+mongopublicip = '54.198.27.228'
+sqlpublicip = '34.230.26.152'
 port=3306
 
 app = Flask(__name__)
@@ -170,18 +171,20 @@ class GetReviewData():
 
     def getAllReviews(self,r_id):
         connection = self.connectMysql()
+        print("connected")
         cursor = connection.cursor()
         query = "SELECT asin, reviewText FROM kindle WHERE reviewerID = '%s'" % (r_id)
         cursor.execute(query)
         results = self.dictfetchall(cursor)
+        #print(results)
         all_review_data = []
         for i in results:
             asin = i.get('asin')
             reviewText = i.get('reviewText')
-            r = GetBookDetails(mongopublicip,port)
+            r = GetBookDetails(mongopublicip, port)
             imgUrl, overview, ab = r.getValues(asin)
-            #all_review_data.append((reviewText))
-        #print(all_review_data)
+            all_review_data.append((imgUrl, reviewText))
+        print(all_review_data)
         cursor.close()
         #connection.close()
         return all_review_data
@@ -211,7 +214,8 @@ class GetReviewData():
 @app.route('/', methods=['GET'])
 def index_page_landing():
     r = GetReviewData(sqlpublicip,port)
-    reviews = r.getAllReviews(r_id = 'A1F6404F1VG29J')
+    reviews = r.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
+    #print(reviews)
     return render_template('index.html',reviews=reviews)
     #return render_template('index3.html')
 
