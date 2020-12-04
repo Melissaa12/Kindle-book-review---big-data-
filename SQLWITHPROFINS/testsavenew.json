@@ -369,6 +369,21 @@
                     "Ref": "KeyName"
                 }
             }
+        },
+        "Slave2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-0f82752aa17ff8f5d",
+                "InstanceType": "t2.medium",
+                "SecurityGroups": [
+                    {
+                        "Ref": "DataSecurity"
+                    }
+                ],
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
         }
     },
     "Outputs": {
@@ -439,7 +454,7 @@
             "Description": "Public IP of Dataserver",
             "Value": {
                 "Fn::GetAtt": [
-                    "Slave1",
+                    "Slave2",
                     "PublicIp"
                 ]
             }
@@ -448,7 +463,25 @@
             "Description": "PrivateIP of Secondaryserver",
             "Value": {
                 "Fn::GetAtt": [
-                    "Slave1",
+                    "Slave2",
+                    "PrivateIp"
+                ]
+            }
+        },
+        "Slave2IP": {
+            "Description": "Public IP of Dataserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave2",
+                    "PublicIp"
+                ]
+            }
+        },
+        "Slave2PriIP": {
+            "Description": "PrivateIP of Secondaryserver",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Slave2",
                     "PrivateIp"
                 ]
             }

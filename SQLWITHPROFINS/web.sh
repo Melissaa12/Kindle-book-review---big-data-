@@ -32,7 +32,8 @@ echo six
 pip3 install pandas
 echo seven
 pip3 install pyspark
-
+pip3 install flask-restful
+sudo pip3 install pymongo
 yes "" | sudo add-apt-repository ppa:webupd8team/java
 yes Y|sudo apt-get update
 yes Y|sudo apt install openjdk-8-jdk
