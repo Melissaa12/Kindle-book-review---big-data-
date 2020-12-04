@@ -2,35 +2,215 @@ from flask import Flask, render_template, request, redirect,url_for, flash
 from flask_restful import Api, Resource, reqparse
 import json
 import jinja2
+from flask import json
+from flask_restful import Resource, request, reqparse
+from bson.json_util import dumps, default
+from random import random
+import pymongo
+from urllib.parse import unquote
+import html
+import mysql.connector
+from mysql.connector import Error
+from mysql.connector import errorcode
+import string
+import html
+import csv
+import requests
+
 
 import sys
 
 
-def returnIPs():
-    #print('This is the mongo public IP Address' +  sys.argv[2])
-    #mongopublicip = sys.argv[1]
-    #mongopublicipadd = 'http://' + mongopublicip + '/asin/'
+print('This is the mongo public IP Address' +  sys.argv[2])
+mongopublicip = sys.argv[1]
+mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-    #print('This is the sql public IP Address' +  sys.argv[1])
-    #sqlpublicip = sys.argv[2]
-
-    mongopublicip = '54.198.27.228'
-    sqlpublicip = '34.230.26.152'
-    port=3306
-
-    return mongopublicip, sqlpublicip, port
+print('This is the sql public IP Address' +  sys.argv[1])
+sqlpublicip = sys.argv[2]
 
 
+port=3306
 
 app = Flask(__name__)
 api = Api(app)
 
-from data import GetBookDetails
-from reviews import GetReviewData
+class GetBookDetails():
+    #Returns book details based on asin
+
+    def __init__(self, mongoip, port):
+        self.mongoip = mongoip
+        self.port = port
+    
+    def getValues(self, asin):
+
+        try:
+            #r = requests.get('http://54.198.27.228:3306/asin/'+asin)
+            r =  requests.get("http://"+ self.mongoip + ":" + str(port) + "/asin/" + asin)
+            imgUrl = r.text.strip().split("####")[0]
+            overview = r.text.strip().split("####")[1]
+            ab = r.text.strip().split("####")[2]
+            ab = ab.strip("]").strip("[").strip().split(",")
+            ab = [i.strip().strip("u'").strip("'") for i in ab]
+            #overview = unquote(overview)
+            overview = html.unescape(overview)
+            return imgUrl, overview, ab
+
+        except Exception as e:
+                print("Unable to connect to MongoDB: {}".format(e))
+
+    def getDetails(self, asin):
+
+
+        default_image = '/static/purple.jpg'
+        default_overview = 'Overview not available.'
+        default_recommended = 'Recommended not available'
+
+        try:
+            #cursor = mycol.find_one({"asin": asin})
+            #jsonstring = dumps(cursor, default=default)
+            #data = json.loads(jsonstring)
+            data = self.getValues(asin)
+
+            if data != None:
+                image, overview, recommended = data[0], data[1], data[2]
+                return (image or default_image, overview or default_overview, recommended or default_recommended)
+
+            else:
+                return (["Not available","Not available","Not available"])  
+
+        except Exception as e:
+            print("Unable to retrieve data: {}".format(e))
+    
+    def get(self, asin):
+        try:
+            image, overview, recommended = self.getDetails(asin)
+            default_recos = "No recs"
+            recommended_images_overviews = []
+            for i in range(min(4,len(recommended))):
+                book = recommended[i]
+                #print(book)
+                r_image, r_overview, r_recommended = self.getDetails(book)
+                recommended_images_overviews.append((r_image, r_overview, book))
+
+            #print(image, overview, recommended_images_overviews or default_recos)
+            return (image, overview, recommended_images_overviews or default_recos)
+        
+        except:
+            return {"Message": "Failed to retrieve data"}, 500
+class GetReviewData():
+
+    def __init__(self, sqlip, port):
+        self.sqlip = sqlip
+        self.port = port
+    
+    def connectMysql(self):
+        connection = mysql.connector.connect(host=self.sqlip, port = self.port, database='books', user='admin', password='bookreviewer')
+        connection.autocommit = False
+        return connection
+
+    def dictfetchall(self,cursor):        #helper function - Returns all rows from a cursor as a list of dicts
+ 
+        desc = cursor.description
+
+        return [dict(zip([col[0] for col in desc], row)) 
+                for row in cursor.fetchall()]
+
+    def get(self, asin):
+
+        connection = self.connectMysql()
+
+        try:
+            cursor = connection.cursor()
+            query = "SELECT * FROM kindle WHERE asin = '%s'" % (asin)
+            cursor.execute(query)
+            results = self.dictfetchall(cursor)
+            default_ratings = 'No Ratings'
+            default_reviews = []
+            ratings = []
+            username_reviews = []
+            
+            for i in results:
+                ratings.append(i.get('overall'))
+                username_reviews.append((i.get('reviewerName'), i.get('overall'), html.unescape(i.get('reviewText'))))
+                
+            if len(ratings)!= 0:
+                avg_rating = round((sum(ratings)/len(ratings)),1)
+            else:
+                avg_rating = 0
+
+            return avg_rating or default_ratings, username_reviews or default_reviews
+
+
+        except Exception as e:
+            print(e)
+            return {"message": "Something goes wrong"}, 500
+
+        finally:
+            cursor.close()
+            print("Cursor is closed")
+
+    def put(self, insert_query, values):
+
+        connection = self.connectMysql()
+
+        try:
+            cursor = connection.cursor()
+            cursor.execute(insert_query,values)
+            
+            connection.commit()
+            return {"Message": "Inserted"}, 200
+
+        except Exception as e:
+            connection.rollback()
+            print("Failed to update record to database rollback: {}".format(e))
+
+        finally:
+            cursor.close()
+            print("Cursor is closed")
+
+    def getAllReviews(self,r_id):
+        connection = self.connectMysql()
+        cursor = connection.cursor()
+        query = "SELECT asin, reviewText FROM kindle WHERE reviewerID = '%s'" % (r_id)
+        cursor.execute(query)
+        results = self.dictfetchall(cursor)
+        all_review_data = []
+        for i in results:
+            asin = i.get('asin')
+            reviewText = i.get('reviewText')
+            r = GetBookDetails(mongopublicip,port)
+            imgUrl, overview, ab = r.getValues(asin)
+            #all_review_data.append((reviewText))
+        #print(all_review_data)
+        cursor.close()
+        #connection.close()
+        return all_review_data
+
+    def totalReviews(self):
+
+        connection = self.connectMysql()
+        try:
+            cursor = connection.cursor()
+            query = "SELECT asin, reviewText FROM kindle"
+            cursor.execute(query)
+            results = cursor.fetchall()
+            
+            fp = open('/Users/varsha/Desktop/asin_review.csv', 'w')
+            myFile = csv.writer(fp)
+            myFile.writerows(results)
+            fp.close()
+            print("Completed")
+
+        except Exception as e:
+            print("Unable to get data: {}".format(e))
+
+        finally:
+            cursor.close()
+
 
 @app.route('/', methods=['GET'])
 def index_page_landing():
-    r = GetReviewData()
+    r = GetReviewData(sqlpublicip,port)
     reviews = r.getAllReviews(r_id = 'A1F6404F1VG29J')
     return render_template('index.html',reviews=reviews)
     #return render_template('index3.html')
@@ -40,9 +220,9 @@ def index_page_landing():
 def hello_world(asin):
    #api.add_resource(BookDetail,'/book/<string:asin>')
    reviews = []
-   c = GetBookDetails()
+   c = GetBookDetails(mongopublicip,port)
    image, overview, recommended = c.get(asin)
-   r = GetReviewData()
+   r = GetReviewData(sqlpublicip,port)
    rating, reviews = r.get(asin)
    print(reviews)
    return render_template('book.html', img = image, overview = overview, recommended = recommended, avg_rating = rating, reviews = reviews)
@@ -51,8 +231,19 @@ def hello_world(asin):
 def create_query(title, summary, genre, rating, review):
     query = ''
     query = "INSERT INTO kindle (idx, asin, overall, reviewText, summary, reviewerID) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (999999,'ABC45678', rating, review, summary, 'A1F6404F1VG29J')
+    values = (None,'ABC45678', rating, review, summary, 'A1F6404F1VG29J')
     return query,values
+
+
+def getArgs():
+    
+
+    title = request.args.get('booktitle') 
+    summary = request.args.get('summary') 
+    genre = request.args.get('genre') 
+    rating = request.args.get('inlineRadioOptions') 
+    review = request.args.get('review') 
+    return (title,summary,genre,rating,review)
 
 @app.route('/add-review',methods =["GET","POST"])
 def add_review():
@@ -63,23 +254,28 @@ def add_review():
     defult_rating = "0"
     default_review = "NO REVIEW"
 
-    title = request.args.get('booktitle') or default_title
-    summary = request.args.get('summary') or default_summary
-    genre = request.args.get('genre') or default_genre
-    rating = request.args.get('inlineRadioOptions') or defult_rating
-    review = request.args.get('review') or default_review
+    title,summary,genre,rating,review = getArgs()
+
+    if title and summary and genre and rating and review:
+        insert_query, values = create_query(title,summary,genre,rating,review)
+        print(insert_query)
+        r = GetReviewData(sqlpublicip,port)
+        r.put(insert_query,values)
+        print("inserted \n")
+        return redirect('/')
+
+
+    #title = request.args.get('booktitle') or default_title
+    #summary = request.args.get('summary') or default_summary
+    #genre = request.args.get('genre') or default_genre
+    #rating = request.args.get('inlineRadioOptions') or defult_rating
+    #review = request.args.get('review') or default_review
 
     #review = request.args.get('review')
     #print(title,genre,image,rating,review)
-    insert_query, values = create_query(title, summary, genre, rating, review)
-    print(insert_query)
-    r = GetReviewData()
-    r.put(insert_query,values)
-    print("inserted \n")
-    print(r.get(0000000))
-    return redirect('/')
+    
 
     return render_template('addReview.html') 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
