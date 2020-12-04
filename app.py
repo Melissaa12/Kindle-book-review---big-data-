@@ -35,10 +35,10 @@ from pyspark.sql.functions import length
 conf=SparkConf()
 conf.set("spark.driver.memory", "5g")
 sc = SparkContext.getOrCreate(conf)
-sc.setCheckpointDir("hdfs://0.0.0.0:19000/project")
+sc.setCheckpointDir("hdfs://"+masternodeip+':9000:'+"/project")
 spark = SparkSession(sc)
 
-
+masternodeip = sys.argv[3]
 print('This is the mongo public IP Address' +  sys.argv[2])
 mongopublicip = sys.argv[1]
 mongopublicipadd = 'http://' + mongopublicip + '/asin/'
@@ -307,7 +307,7 @@ def search():
    # ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
 
    # wordR = request.form['tfidfword']
-   data = spark.read.csv("hdfs://0.0.0.0:19000/project/kindle_reviews.csv", header=True, sep=",")
+   data = spark.read.csv("hdfs://"+masternodeip+':9000:'+"/project/kindle_reviews.csv", header=True, sep=",")
    data = data.na.drop(subset=["reviewText"])
 
    tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
@@ -359,7 +359,7 @@ def search():
 
    output0 = resultData.withColumn("features", map_to_word(vocab)(resultData.features))
    output = output0.select("asin","reviewerID","features")
-   output.write.format("csv").save("hdfs://0.0.0.0:19000/result7")
+   output.write.format("csv").save("hdfs://"+masternodeip+':9000:' + "/result7")
 
    return render_template('tfidfresult.html', data="placeholder")
 
