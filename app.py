@@ -16,21 +16,39 @@ import string
 import html
 import csv
 import requests
-
-
 import sys
 
+import numpy as np
+import pandas as pd
+import math 
+import sys
+from pyspark import SparkContext
+from pyspark import SparkConf
+from pyspark.sql.session import SparkSession
+from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
+from pyspark.sql.functions import udf, col
+from pyspark.mllib.feature import HashingTF
+from pymongo import MongoClient
+from pyspark.sql.types import StringType
+from pyspark.sql.functions import *
+from pyspark.sql.functions import length
+conf=SparkConf()
+conf.set("spark.driver.memory", "5g")
+sc = SparkContext.getOrCreate(conf)
+sc.setCheckpointDir("hdfs://0.0.0.0:19000/project")
+spark = SparkSession(sc)
 
-#print('This is the mongo public IP Address' +  sys.argv[2])
-#mongopublicip = sys.argv[1]
-#mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-#print('This is the sql public IP Address' +  sys.argv[1])
-#sqlpublicip = sys.argv[2]
+print('This is the mongo public IP Address' +  sys.argv[2])
+mongopublicip = sys.argv[1]
+mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-mongopublicip = '54.198.27.228'
-sqlpublicip = '34.230.26.152'
-port=3306
+print('This is the sql public IP Address' +  sys.argv[1])
+sqlpublicip = sys.argv[2]
+
+# mongopublicip = '54.198.27.228'
+# sqlpublicip = '34.230.26.152'
+# port=3306
 
 app = Flask(__name__)
 api = Api(app)
@@ -281,5 +299,70 @@ def add_review():
 
     return render_template('addReview.html') 
 
+
+@app.route('/predict', methods=['POST'])
+def search():
+   # df = totalReviews()
+   
+   # ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
+
+   # wordR = request.form['tfidfword']
+   data = spark.read.csv("hdfs://0.0.0.0:19000/project/kindle_reviews.csv", header=True, sep=",")
+   data = data.na.drop(subset=["reviewText"])
+
+   tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
+   wordsData = tokenizer.transform(data)
+
+   cv = CountVectorizer(inputCol="words", outputCol="rawFeatures",vocabSize = 2000)
+   model = cv.fit(wordsData)
+   featurizedData = model.transform(wordsData)
+   vocab = model.vocabulary
+
+   idf = IDF(inputCol= "rawFeatures", outputCol="features")
+   idfModel = idf.fit(featurizedData)
+   resultData = idfModel.transform(featurizedData)
+   tfidfRow=[]
+   #get tfidf of each row
+   def searchFunc (row,vocab,req):
+      a = {}
+      index = vocab.index(req)
+      array = row.toArray()
+      tfidfWord = 0
+      for i in range(len(row)):
+         if (array[i]!=0  ):
+            tfidf=array[i]
+            word= vocab[i]
+            if(word==req):
+            # print(tfidf)
+               tfidfWord = tfidf
+               a[word]= tfidf
+      tfidfRow.append(tfidfWord)
+      return str(a)
+
+   def searchFunc1(row, vocab):
+      d = {}
+      array = row.toArray()
+      # print(array[0])
+      # print(vocab[0])
+      # print(array[1])
+      # print(vocab[1])
+      for i in range(len(row)):
+         if (array[i] != 0):
+            tfidf = array[i]
+            word = vocab[i]
+            d[word] = tfidf
+      return str(d)
+
+   def map_to_word(vocab):
+      return udf(lambda row: searchFunc1(row, vocab))
+      # return udf(lambda row: searchFunc(row, vocab, wordR))
+
+   output0 = resultData.withColumn("features", map_to_word(vocab)(resultData.features))
+   output = output0.select("asin","reviewerID","features")
+   output.write.format("csv").save("hdfs://0.0.0.0:19000/result7")
+
+   return render_template('tfidfresult.html', data="placeholder")
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=3306)

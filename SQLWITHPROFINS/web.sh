@@ -34,6 +34,7 @@ echo seven
 pip3 install pyspark
 pip3 install flask-restful
 sudo pip3 install pymongo
+pip3 install mysql-connector-python-rf
 yes "" | sudo add-apt-repository ppa:webupd8team/java
 yes Y|sudo apt-get update
 yes Y|sudo apt install openjdk-8-jdk
