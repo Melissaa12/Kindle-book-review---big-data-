@@ -6,17 +6,22 @@ from random import random
 import pymongo
 from urllib.parse import unquote
 import html
+from app import returnIPs
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["metadata"]
 mycol = mydb["metada"]
-#54.158.202.27
-
 import requests
+
+mongopublicip, sqlpublicip, port = returnIPs()
+#print(mongopublicip)
+#print("http://"+ mongopublicip + ":" + str(port) + "asin/")
 
 def getValues(asin):
 
-    r =requests.get('http://3.236.55.91:3306/asin/'+asin)
+    #r = requests.get('http://54.198.27.228:3306/asin/'+asin)
+    r =  requests.get("http://"+ mongopublicip + ":" + str(port) + "/asin/" + asin)
+    #print("r")
     imgUrl = r.text.strip().split("####")[0]
     overview = r.text.strip().split("####")[1]
     ab = r.text.strip().split("####")[2]
@@ -77,6 +82,6 @@ class GetBookDetails(Resource):
 
 #print(getDetails('B00HZNSXHW'))
 #print("hello")
-#c = GetBookDetails()
-#print(c.get('B0013TQVPK'))
+c = GetBookDetails()
+print(c.get('B00HZNSXHW'))
 

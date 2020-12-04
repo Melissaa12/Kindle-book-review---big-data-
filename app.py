@@ -2,23 +2,31 @@ from flask import Flask, render_template, request, redirect,url_for, flash
 from flask_restful import Api, Resource, reqparse
 import json
 import jinja2
-from data import GetBookDetails
-from reviews import GetReviewData
 
 import sys
 
-print('This is the mongo public IP Address' +  sys.argv[2])
-mongopublicip = sys.argv[1]
-mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-print('This is the sql public IP Address' +  sys.argv[1])
-sqlpublicip = sys.argv[2]
+def returnIPs():
+    #print('This is the mongo public IP Address' +  sys.argv[2])
+    #mongopublicip = sys.argv[1]
+    #mongopublicipadd = 'http://' + mongopublicip + '/asin/'
+
+    #print('This is the sql public IP Address' +  sys.argv[1])
+    #sqlpublicip = sys.argv[2]
+
+    mongopublicip = '54.198.27.228'
+    sqlpublicip = '34.230.26.152'
+    port=3306
+
+    return mongopublicip, sqlpublicip, port
+
 
 
 app = Flask(__name__)
 api = Api(app)
 
-
+from data import GetBookDetails
+from reviews import GetReviewData
 
 @app.route('/', methods=['GET'])
 def index_page_landing():
@@ -43,7 +51,7 @@ def hello_world(asin):
 def create_query(title, summary, genre, rating, review):
     query = ''
     query = "INSERT INTO kindle (idx, asin, overall, reviewText, summary, reviewerID) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (999999,0000000, rating, review, summary, 'A1F6404F1VG29J')
+    values = (999999,'ABC45678', rating, review, summary, 'A1F6404F1VG29J')
     return query,values
 
 @app.route('/add-review',methods =["GET","POST"])
