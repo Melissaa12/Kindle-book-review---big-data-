@@ -51,7 +51,7 @@ sqlpublicip = sys.argv[2]
 
 # mongopublicip = '54.198.27.228'
 # sqlpublicip = '34.230.26.152'
-port=3306
+port='3306'
 
 app = Flask(__name__)
 api = Api(app)
