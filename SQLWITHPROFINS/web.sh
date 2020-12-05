@@ -1,8 +1,12 @@
+sudo adduser hadoop --gecos "" --disabled-password
+sudo sh -c 'echo "hadoop ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/90-hadoop'
+sudo su hadoop
 sudo apt-get update
 sudo apt-get install git
 echo mongoip
 echo $2
-echo sqlip
+echo sqlipcd
+
 echo $3
 echo masterip
 echo $4

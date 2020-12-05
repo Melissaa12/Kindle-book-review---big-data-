@@ -79,17 +79,7 @@ print('secondary private ip')
 print(Slave0PriIp)
 
 
-#setting up sql server
-subprocess.call(['bash','sqlbash.sh',MySQLIP,sys.argv[4]])
 
-
-
-#Setting up Data Analytics Server
-passingtosub = ['bash','databash.sh',sys.argv[4],MasterIp,MasterPriIp,Slave0Ip,Slave0PriIp]
-for i in range(len(slavednsarr)):
-    passingtosub.append(slaveiparr[i])
-    passingtosub.append(slavednsarr[i])
-subprocess.call(passingtosub)
 
 
 
@@ -165,6 +155,19 @@ print('stderr:', stderr.read())
 stdin, stdout, stderr = ssh.exec_command('sudo nohup python BigdataMongo/runmongo.py > log.txt 2>&1 &' )
 print('stdout:', stdout.read())
 print('stderr:', stderr.read())
+
+#setting up sql server
+subprocess.call(['bash','sqlbash.sh',MySQLIP,sys.argv[4]])
+
+
+
+#Setting up Data Analytics Server
+passingtosub = ['bash','databash.sh',sys.argv[4],MasterIp,MasterPriIp,Slave0Ip,Slave0PriIp]
+for i in range(len(slavednsarr)):
+    passingtosub.append(slaveiparr[i])
+    passingtosub.append(slavednsarr[i])
+subprocess.call(passingtosub)
+
 
 # Setting up the Webserver
 print("SQLPublicIP")

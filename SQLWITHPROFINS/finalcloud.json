@@ -332,7 +332,14 @@
                         "CidrIp": "0.0.0.0/0",
                         "FromPort": 22,
                         "ToPort": 22
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": 9000,
+                        "ToPort": 9000
                     }
+
                 ]
             }
         },
@@ -351,6 +358,26 @@
                 "SourceSecurityGroupId": {
                     "Fn::GetAtt": [
                         "DataSecurity",
+                        "GroupId"
+                    ]
+                }
+            }
+        },
+        "MaintoDataIngress": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "GroupId": {
+                    "Fn::GetAtt": [
+                        "DataSecurity",
+                        "GroupId"
+                    ]
+                },
+                "IpProtocol": -1,
+                "FromPort": -1,
+                "ToPort": -1,
+                "SourceSecurityGroupId": {
+                    "Fn::GetAtt": [
+                        "InstanceSecurityGroup",
                         "GroupId"
                     ]
                 }

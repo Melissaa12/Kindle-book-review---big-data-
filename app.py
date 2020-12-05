@@ -238,7 +238,12 @@ def index_page_landing():
     return render_template('index.html',reviews=reviews)
     #return render_template('index3.html')
 
-
+@app.route('/correlation')
+def correlation():
+   return render_template('correlation.html')
+@app.route('/tf-idf')
+def tf_idf():
+   return render_template('tf-idf.html')
 @app.route('/book/<string:asin>')
 def hello_world(asin):
    #api.add_resource(BookDetail,'/book/<string:asin>')
