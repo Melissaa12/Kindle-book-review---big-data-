@@ -7,7 +7,10 @@ from time import sleep
 import sys
 import os
 stack_name = 'DBPJT3'
-
+print(sys.argv[1])
+print(sys.argv[4])
+print(sys.argv[5])
+print(sys.argv[6])
 # calls tweakStack to create cloudformationjson for number of datanodes indicated
 tweakStack(stack_name,int(sys.argv[5]))
 template_file_location = "./testsavenew.json"
