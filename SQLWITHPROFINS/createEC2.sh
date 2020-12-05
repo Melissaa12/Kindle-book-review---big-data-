@@ -1,3 +1,4 @@
+ . venv/bin/activate
 # installing requirements 
 pip3 install boto3
 pip3 install pyyaml
@@ -36,11 +37,13 @@ AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}
 AWS_SESSION_TOKEN=${aws_session_token}
 REGION=${region}
 EOF
-
+source /etc/environment
 echo $AWS_SESSION_TOKEN
 
-source /etc/environment
 
-python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token $keyname $numberOfSlaves $region
+
+python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token $keyname $numberOfSlaves ${region}
+yes Y|sudo apt install python-pip3
+pip install --upgrade pip3
 pip3 install paramiko
 python3 sshEC2.py $access_key_id $aws_secret_access_key $aws_session_token $key_path $key_name $numberOfSlaves
