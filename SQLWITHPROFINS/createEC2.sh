@@ -1,3 +1,4 @@
+#!/bin/bash
  . venv/bin/activate
 # installing requirements 
 pip3 install boto3
