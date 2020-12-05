@@ -1,6 +1,8 @@
 import boto3
 from boto3 import NullHandler
 import json
+import sys
+import copy
 # you need the cloud_formation_client for this?
 # why is there a tempfile close below?
 def updateStack(stack_name='DBPJT3' , n =1,keyname='dbproject'):
@@ -51,8 +53,8 @@ def updateStack(stack_name='DBPJT3' , n =1,keyname='dbproject'):
   template["Resources"]["Slave"+str(1+i)] = tempVal
   tempOutput["Value"]["Fn::GetAtt"][0] = "Slave"+str(1+i)
   tempOutput2["Value"]["Fn::GetAtt"][0] = "Slave"+str(1+i)
-  template["Outputs"]["Slave"+str(1+i)+"IP"] = tempOutput
-  template["Outputs"]["Slave"+str(1+i)+"PriIP"] = tempOutput2
+  template["Outputs"]["Slave"+str(1+i)+"IP"] = copy.deepcopy(tempOutput)
+  template["Outputs"]["Slave"+str(1+i)+"PriIP"] = copy.deepcopy(tempOutput2)
 
  json.dump(template, newtemplate , indent=4)
  tempfile.close() 
@@ -66,3 +68,5 @@ def updateStack(stack_name='DBPJT3' , n =1,keyname='dbproject'):
      TemplateBody=json.dumps(template)
      )
  return response
+
+ updateStack('DBPJT3',sys.argv[1],'dbproject')

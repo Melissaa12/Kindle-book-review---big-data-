@@ -9,15 +9,11 @@ wget https://apachemirror.sg.wuchna.com/hadoop/common/hadoop-3.3.0/hadoop-3.3.0.
 cd ~/download
 tar zxvf hadoop-3.3.0.tar.gz
 
-# sudo tee -a hadoop-3.3.0/etc/hadoop/hadoop-env.sh << EOF
-# export JAVA_HOME=\/usr\/lib\/jvm\/java-8-openjdk-amd64
-# EOF
+
 sudo su -c 'sed -i "s/# export JAVA_HOME=.*/export JAVA_HOME=\/usr\/lib\/jvm\/java-8-openjdk-amd64/g" hadoop-3.3.0/etc/hadoop/hadoop-env.sh' hadoop
-# export JH="\/usr\/lib\/jvm\/java-8-openjdk-amd64"
-# sed -i "s/# export JAVA_HOME=.*/export\ JAVA_HOME="\${JH}"/g" \
-# hadoop-3.3.0/etc/hadoop/hadoop-env.sh
-# sed -i "s/# export JAVA_HOME=.*/export\ JAVA_HOME=${JH}/g" \ls
+
 MASTER=com.avg.master
+#variable here
 WORKERS="com.avg.secondary com.avg.slave1 com.avg.slave2"
 
 echo -e "<?xml version=\"1.0\"?>
@@ -50,6 +46,10 @@ echo -e "<?xml version=\"1.0\"?>
 <property>
 <name>dfs.replication</name>
 <value>3</value>
+</property>
+<property>
+<name>dfs.webhdfs.enabled</name>
+<value>true</value>
 </property>
 <property>
 <name>dfs.namenode.name.dir</name>

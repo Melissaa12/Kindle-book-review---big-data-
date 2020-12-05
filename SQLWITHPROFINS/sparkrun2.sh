@@ -18,10 +18,10 @@ which hdfs
 /opt/hadoop-3.3.0/bin/hdfs dfs -mkdir -p /project
 /opt/hadoop-3.3.0/bin/hdfs dfs -put kindle_reviews.csv /project/
 /opt/hadoop-3.3.0/bin/hdfs dfs -put meta_Kindle_Store.json /project/
-
+cd DBProject
+/opt/hadoop-3.3.0/bin/hdfs dfs -put data/mongo_price_asin.csv /project/
+cd ..
 cd ..
 cd ..
 cd /opt/spark-3.0.1-bin-hadoop3.2/examples/jars
 /opt/spark-3.0.1-bin-hadoop3.2/bin/spark-submit --deploy-mode client --class org.apache.spark.examples.SparkPi spark-examples_2.12-3.0.1.jar 10
-cd DBProject
-/opt/hadoop-3.3.0/bin/hdfs dfs -put data/mongo_price_asin.csv /project/

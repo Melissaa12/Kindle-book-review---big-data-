@@ -1,6 +1,7 @@
 import boto3
 from boto3 import NullHandler
 import json
+import copy
 def tweakStack(stack_name='DBPJT3'  , n = 0 ):
 
  template_file_location = "./finalcloud.json"
@@ -47,8 +48,8 @@ def tweakStack(stack_name='DBPJT3'  , n = 0 ):
   content["Resources"]["Slave"+str(1+i)] = tempVal
   tempOutput["Value"]["Fn::GetAtt"][0] = "Slave"+str(1+i)
   tempOutput2["Value"]["Fn::GetAtt"][0] = "Slave"+str(1+i)
-  content["Outputs"]["Slave"+str(1+i)+"IP"] = tempOutput
-  content["Outputs"]["Slave"+str(1+i)+"PriIP"] = tempOutput2
+  content["Outputs"]["Slave"+str(1+i)+"IP"] = copy.deepcopy(tempOutput)
+  content["Outputs"]["Slave"+str(1+i)+"PriIP"] = copy.deepcopy(tempOutput2)
 
  #content = json.dumps(content)
  

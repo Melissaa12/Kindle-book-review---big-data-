@@ -17,7 +17,9 @@ import html
 import csv
 import requests
 import sys
-
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import math 
@@ -64,8 +66,7 @@ class GetBookDetails():
     def getValues(self, asin):
 
         try:
-            #r = requests.get('http://54.198.27.228:3306/asin/'+asin)
-            r =  requests.get("http://"+ self.mongoip + ":" + str(port) + "/asin/" + asin)
+            r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/asin/" + asin)
             imgUrl = r.text.strip().split("####")[0]
             overview = r.text.strip().split("####")[1]
             ab = r.text.strip().split("####")[2]
@@ -77,7 +78,44 @@ class GetBookDetails():
 
         except Exception as e:
                 print("Unable to connect to MongoDB: {}".format(e))
+    def putValues(self,log):
+            #http://54.91.81.131:3306/log?code=200&method=GET&function=reviews&time=12000
 
+            insert_values = {}
+            insert_values['code'] = log[0]
+            insert_values['method'] = log[1]
+            insert_values['function'] = log[2]
+            insert_values['time'] = log[3]
+            r = requests.get("http://"+ self.mongoip + ":" + self.port + "/log", params = insert_values)
+            print("done")
+
+        def getTitles(self):
+            
+            url = "http://" + self.mongoip + ":" + self.port + "/titles"
+            html = urlopen(url).read()
+            soup = BeautifulSoup(html, features="html.parser")
+
+            # get text
+            text = soup.get_text()
+            titles = text.split('####')
+
+            return titles
+
+        def getRandom(self):
+            url = "http://" + self.mongoip + ":" + self.port + "/rando"
+            html = urlopen(url).read()
+            soup = BeautifulSoup(html, features="html.parser")
+
+            # get text
+            text = soup.get_text()
+            random_books = text.split('####')
+
+            book_display = []
+            for book in random_books:
+                image, overview, recommended = self.getDetails(book)
+                book_display.append((image, overview, book))
+                
+            return book_display
     def getDetails(self, asin):
 
 
@@ -178,6 +216,11 @@ class GetReviewData():
             cursor.execute(insert_query,values)
             
             connection.commit()
+            now = datetime.now()
+            current_time = now.strftime("%H:%M:%S")
+            log = (200, 'PUT', 'addreview', current_time)
+            c = GetBookDetails(mongopublicip, port)
+            c.putValues(log)
             return {"Message": "Inserted"}, 200
 
         except Exception as e:
@@ -202,8 +245,8 @@ class GetReviewData():
             reviewText = i.get('reviewText')
             r = GetBookDetails(mongopublicip, port)
             imgUrl, overview, ab = r.getValues(asin)
-            all_review_data.append((imgUrl, reviewText))
-        print(all_review_data)
+            all_review_data.append((imgUrl, reviewText, asin))
+        # print(all_review_data)
         cursor.close()
         #connection.close()
         return all_review_data
@@ -234,8 +277,10 @@ class GetReviewData():
 def index_page_landing():
     r = GetReviewData(sqlpublicip,port)
     reviews = r.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
+    m = GetBookDetails(mongopublicip, port)
+    bookdisplay = m.getRandom()
     #print(reviews)
-    return render_template('index.html',reviews=reviews)
+    return render_template('index.html',reviews=reviews, book_display = bookdisplay)
     #return render_template('index3.html')
 @app.route('/corr-calculate',methods=['POST'])
 def corr():
@@ -322,12 +367,12 @@ def add_review():
 
     if title and summary and genre and rating and review:
         insert_query, values = create_query(title,summary,genre,rating,review)
-        print(insert_query)
         r = GetReviewData(sqlpublicip,port)
         r.put(insert_query,values)
         print("inserted \n")
         return redirect('/')
-
+    m = GetBookDetails(mongopublicip,port)
+    titles = m.getTitles()
 
     #title = request.args.get('booktitle') or default_title
     #summary = request.args.get('summary') or default_summary

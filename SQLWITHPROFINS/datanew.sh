@@ -9,7 +9,7 @@ echo $4
 
 export LC_ALL=C
 sudo adduser hadoop --gecos "" --disabled-password
-
+#variable here
 sudo tee /etc/hosts << EOF
 127.0.0.1 localhost
 

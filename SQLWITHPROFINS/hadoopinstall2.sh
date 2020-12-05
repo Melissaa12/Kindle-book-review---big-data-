@@ -8,7 +8,7 @@ yes Y|/opt/hadoop-3.3.0/bin/hdfs namenode -format
 
 /opt/hadoop-3.3.0/sbin/start-dfs.sh && /opt/hadoop-3.3.0/sbin/start-yarn.sh
 /opt/hadoop-3.3.0/bin/hdfs dfsadmin -report
-
+echo Checkhere
 
 
 
@@ -41,7 +41,7 @@ export SPARK_EXECUTOR_MEMORY=2G
 export SPARK_DRIVER_MEMORY=1G
 export PYSPARK_PYTHON=python3
 " >> spark-3.0.1-bin-hadoop3.2/conf/spark-env.sh
-
+#variable here
 WORKERS="com.avg.secondary com.avg.slave1 com.avg.slave2"
 for ip in ${WORKERS};
 do echo -e "${ip}" >> spark-3.0.1-bin-hadoop3.2/conf/slaves; done
