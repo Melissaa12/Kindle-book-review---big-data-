@@ -237,7 +237,43 @@ def index_page_landing():
     #print(reviews)
     return render_template('index.html',reviews=reviews)
     #return render_template('index3.html')
+@app.route('/corr-calculate',methods=['POST'])
+def corr():
+   #1. extract asin and review text AND CREATE NEW COLUMN REVIEWLENGTH
+   reviews_df = spark.read.csv("hdfs://0.0.0.0:19000/project/kindle_reviews.csv", header=True, sep=",")
+   reviews = reviews_df.select("asin","reviewText")
+   reviews = reviews.withColumn("reviewText", length(reviews.reviewText))
+   reviews_avg = reviews.groupBy("asin").agg(mean("reviewText").alias("average_reviewLength"))
 
+   print(reviews_avg.head(5))
+   #2. extract asin and price
+   price_df = spark.read.csv("hdfs://0.0.0.0:19000/project/mongo_price_asin.csv", header=True, sep=",")
+
+#    #3. join based on asin
+   combined_table = price_df.join(reviews_avg, price_df.asin == reviews_avg.asin)
+   combined_table = combined_table.drop('asin')
+   data = combined_table.filter(col("price").isNotNull() & col("average_reviewLength").isNotNull())  # drop None values
+
+   print(data.head(5))
+
+#    #4. preprocess data
+   rdd = data.rdd.map(list)
+   rdd.take(5)
+   n = rdd.count()
+   x = rdd.map(lambda x: float(x[0])).sum()
+   y = rdd.map(lambda x: x[1]).sum()
+   xy = rdd.map(lambda x: float(x[0]) * x[1]).sum()
+   xx = rdd.map(lambda x: float(x[0])**2).sum()
+   yy = rdd.map(lambda x: x[1]**2).sum()
+   #5. corr 
+   numerator = xy - (x * y)/n
+   denominator = math.sqrt(xx - (x * x)/n) * math.sqrt(yy - (y * y)/n)
+   correlation = numerator / denominator
+   print("The Pearson Correlation between price and average review length is: ")
+   print(correlation)
+
+
+   return render_template('tfidfresult.html', data=correlation)
 @app.route('/correlation')
 def correlation():
    return render_template('correlation.html')
