@@ -11,8 +11,9 @@ print(sys.argv[1])
 print(sys.argv[4])
 print(sys.argv[5])
 print(sys.argv[6])
+keyname='newawskey'
 # calls tweakStack to create cloudformationjson for number of datanodes indicated
-tweakStack(stack_name,int(sys.argv[5]))
+tweakStack(stack_name,int(sys.argv[4]))
 template_file_location = "./testsavenew.json"
 # template_file_location = "./testsave3.json"
 
@@ -23,21 +24,21 @@ content = json.dumps(content)
 
 #create EC2keypair
 
-ec2 = boto3.client('ec2',region_name=sys.argv[6],aws_access_key_id=sys.argv[1],aws_secret_access_key=sys.argv[2],aws_session_token=sys.argv[3])
-response = ec2.create_key_pair(KeyName=sys.argv[4])
+ec2 = boto3.client('ec2',region_name=sys.argv[5],aws_access_key_id=sys.argv[1],aws_secret_access_key=sys.argv[2],aws_session_token=sys.argv[3])
+response = ec2.create_key_pair(KeyName=keyname)
 # aws_key = response.key_material
 key2 = response['KeyMaterial']
 f = open("key.pem", "w")
 f.write(key2)
 f.close()
 # # creates the stack with all EC2 instances
-cloud_formation_client = boto3.client('cloudformation',aws_access_key_id= sys.argv[1],aws_secret_access_key=sys.argv[2],aws_session_token=sys.argv[3],region_name=sys.argv[6])
+cloud_formation_client = boto3.client('cloudformation',aws_access_key_id= sys.argv[1],aws_secret_access_key=sys.argv[2],aws_session_token=sys.argv[3],region_name=sys.argv[5])
 print("Creating {}".format(stack_name))
 response = cloud_formation_client.create_stack(
     StackName=stack_name,
     Parameters=[{
         'ParameterKey':"KeyName",
-        'ParameterValue':sys.argv[4]
+        'ParameterValue': keyname
     },],
     TemplateBody=content
 )

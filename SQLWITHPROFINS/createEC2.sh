@@ -35,8 +35,6 @@ ACCESS_KEY_ID=${access_key_id}
 AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}
 AWS_SESSION_TOKEN=${aws_session_token}
 REGION=${region}
-KEYNAME=awskeyecho
-KEYPATH=key.pem
 EOF
 source /etc/environment
 echo $AWS_SESSION_TOKEN
@@ -47,8 +45,8 @@ echo $KEYNAME
 pip3 install boto3
 pip3 install pyyaml
 
-python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token ${KEYNAME} $numberOfSlaves ${region}
+python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token $numberOfSlaves ${region}
 yes Y|sudo apt install python-pip3
 pip install --upgrade pip3
 pip3 install paramiko
-python3 sshEC2.py $access_key_id $aws_secret_access_key $aws_session_token ${KEYPATH} ${KEYNAME} $numberOfSlaves
+python3 sshEC2.py $access_key_id $aws_secret_access_key $aws_session_token $numberOfSlaves
