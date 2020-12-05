@@ -2,11 +2,13 @@ set up a fresh aws of ami-id: ami-0f82752aa17ff8f5d
 ssh ubuntu@publicip -i <keypempath>
 sudo apt-get update
 sudo apt-get install git
-once in gitclone using this https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git 
+git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git 
 cd DBProject
 cd SQLWITHPROFINS
-run dependencies.sh
-run createEC2.sh
+sh dependencies.sh
+sh createEC2.sh
+
+Enter Credentials
 
 
 to delete whole stack

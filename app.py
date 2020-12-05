@@ -89,7 +89,7 @@ class GetBookDetails():
             r = requests.get("http://"+ self.mongoip + ":" + self.port + "/log", params = insert_values)
             print("done")
 
-        def getTitles(self):
+    def getTitles(self):
             
             url = "http://" + self.mongoip + ":" + self.port + "/titles"
             html = urlopen(url).read()
@@ -101,7 +101,7 @@ class GetBookDetails():
 
             return titles
 
-        def getRandom(self):
+    def getRandom(self):
             url = "http://" + self.mongoip + ":" + self.port + "/rando"
             html = urlopen(url).read()
             soup = BeautifulSoup(html, features="html.parser")

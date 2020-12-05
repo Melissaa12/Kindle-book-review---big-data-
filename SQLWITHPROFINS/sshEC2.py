@@ -11,6 +11,7 @@ stack_name = "DBPJT3"
 MongoIP = "0.0.0.0"
 MySQLIP = "0.0.0.0"
 WebServerIP = "0.0.0.0"
+keypath = 'key.pem'
 cloud_formation_client = boto3.client('cloudformation',aws_access_key_id= sys.argv[1],aws_secret_access_key=sys.argv[2],aws_session_token=sys.argv[3],region_name=sys.argv[5])
 
 response = cloud_formation_client.describe_stacks(
@@ -49,7 +50,7 @@ def ssh_connect_with_retry(ssh, ip_address, retries):
     if retries > 3:
         return False
     privkey = paramiko.RSAKey.from_private_key_file(
-        sys.argv[4])
+        keypath)
     interval = 5
     try:
         retries += 1
@@ -157,12 +158,12 @@ print('stdout:', stdout.read())
 print('stderr:', stderr.read())
 
 #setting up sql server
-subprocess.call(['bash','sqlbash.sh',MySQLIP,'key.pem'])
+subprocess.call(['bash','sqlbash.sh',MySQLIP,keypath])
 
 
 
 #Setting up Data Analytics Server
-passingtosub = ['bash','databash.sh','key.pem',MasterIp,MasterPriIp,Slave0Ip,Slave0PriIp]
+passingtosub = ['bash','databash.sh',keypath,MasterIp,MasterPriIp,Slave0Ip,Slave0PriIp]
 for i in range(len(slavednsarr)):
     passingtosub.append(slaveiparr[i])
     passingtosub.append(slavednsarr[i])
@@ -176,4 +177,4 @@ print("MONGOPublicIP")
 print(MongoIP)
 print("WEBSERVERIP")
 print(WebServerIP)
-subprocess.call(['bash','websetup.sh',WebServerIP,'key.pem',MongoIP,MySQLIP,MasterIp])
+subprocess.call(['bash','websetup.sh',WebServerIP,keypath,MongoIP,MySQLIP,MasterIp])
