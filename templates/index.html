@@ -27,7 +27,16 @@
         <ul class="navbar-nav mr-auto">
         </ul>
         <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <div class="input-group">
+            <input type="text" class="form-control" aria-label="Text input with dropdown button">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Type</button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Author</a>
+                <a class="dropdown-item" href="#">Title</a>
+              </div>
+            </div>
+          </div>
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
       </div>
@@ -35,29 +44,32 @@
 
     <div style="padding: 60px;">
         <h2 style="padding-left: 35px">Your reviews</h2>
-        <div class="row row-cols-1 row-cols-md-5">
+        <div class="row row-cols-1 row-cols-md-4">
           {% for review in reviews%}
-            <div class="col mb-4">
-              <div class="card">
-                <img src="{{review[0]}}" class="card-img-top" alt="...">
-                <div class="card-body">
-                  <h5 class="card-title">{{Book_title}}</h5>
-                  <p class="card-text">{{review[1]}}</p>
-                    <a href="book" class="stretched-link"></a>
+            <div class="col mb-3" style="max-width: 430px; margin: 10px;">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <img src="{{review[0]}}" class="card-img-top" alt="...">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title">{{Book_title}}</h5>
+                    <p class="card-text" style="height: 100px; overflow: hidden;">{{review[1]}}</p>
+                      <a href={{url_for('hello_world', asin = review[2])}} class="stretched-link"></a>
+                  </div>
                 </div>
               </div>
             </div>
           {% endfor %}
         </div>
-        <button type="button" class="btn btn-secondary btn-sm" href="your_reviews">See all</button>
     </div>
 
 
-    <div style="padding: 20px">
-        <div class="container">
+    <div style="padding: 60px">
+        <div>
           <div class="row">
             <div class="col-10">
-              <h2>Reviewed books</h2>
+              <h2>Browse books</h2>
             </div>
 
             <div class="col">
@@ -92,21 +104,24 @@
           </div>
             <br/>
 
-        <div class="row row-cols-1 row-cols-md-5">
-          {% for reviews in reviews%}
-            <div class="col mb-4">
-              <div class="card">
-                <img src="{{ img }}" class="card-img-top" alt="...">
-                <div class="card-body">
-                  <h5 class="card-title">{{Book_title}}</h5>
-                  <p class="card-text">{{Review}}</p>
-                    <a href="book" class="stretched-link"></a>
+        <div class="row row-cols-1 row-cols-md-4">
+          {% for book in book_display%}
+            <div class="card mb-3" style="max-width: 430px; margin: 10px;">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <img src="{{book[0]}}" class="card-img-top" alt="...">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title">{{Book_title}}</h5>
+                    <p class="card-text" style="height: 100px; overflow: hidden;">{{book[1]}}</p>
+                      <a href={{url_for('hello_world',  asin = book[2])}} class="stretched-link"></a>
+                  </div>
                 </div>
               </div>
             </div>
           {% endfor %}
         </div>
-        <button type="button" class="btn btn-secondary btn-block">See more</button>
     </div>
     </div>
   </content>

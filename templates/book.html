@@ -65,61 +65,22 @@
 
         <div style="padding: 60px;">
             <h2 style="padding-left: 35px">Recommended</h2>
-            <!--Carousel Wrapper-->
-            <div id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel" style="padding: 20px;">
-              <!--Controls-->
-              <div class="controls-top">
-                <a class="btn-floating" href="#multi-item-example" data-slide="prev"><i class="fas fa-chevron-left"></i></a>
-                <a class="btn-floating" href="#multi-item-example" data-slide="next"><i
-                    class="fas fa-chevron-right"></i></a>
-              </div>
-              <!--/.Controls-->
-              <!--Indicators-->
-              <ol class="carousel-indicators">
-                <li data-target="#multi-item-example" data-slide-to="0" class="active" style="background-color: black;"></li>
-                <li data-target="#multi-item-example" data-slide-to="1" style="background-color: black;"></li>
-
-              </ol>
-              <!--/.Indicators-->
-              <!--Slides-->
-              <div class="carousel-inner" role="listbox">
-                <!--First slide-->
-                <div class="carousel-item active">
-                    {% for recommended in recommended%}
-                      <div class="col-md-3" style="float:left">
-                        <div class="card mb-2">
-                          <img class="card-img-top" src="{{ recommended[0] }}" alt="Card image cap">
-                          <div class="card-body">
-                            <h5 class="card-title">{{ Book_title }}</h5>
-                            <p class="card-text">{{ recommended[1] }}</p>
-                              <a href="{{recommended[2]}}" class="stretched-link"></a>
-                          </div>
-                        </div>
-                      </div>
-                    {% endfor %}
-                <!--/.First slide-->
-
-                <!--Second slide-->
-                <div class="carousel-item">
-                  {% for recommended in recommended %}
-                      <div class="col-md-3" style="float:left">
-                        <div class="card mb-2">
-                          <img class="card-img-top" src="{{ recommended[0] }}" alt="Card image cap">
-                          <div class="card-body">
-                            <h5 class="card-title">{{ Book_title }}</h5>
-                            <p class="card-text">{{ recommended[1] }}</p>
-                              <a href={{recommended[2]}} class="stretched-link"></a>
-                          </div>
-                        </div>
-                      </div>
-                    {% endfor %}
+            <div class="row row-cols-1 row-cols-md-5">
+              {% for recommended in recommended%}
+                <div class="col mb-4">
+                  <div class="card">
+                    <img src="{{ recommended[0] }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ Book_title }}</h5>
+                      <p class="card-text">{{ recommended[1] }}</p>
+                        <a href="{{recommended[2]}}" class="stretched-link"></a>
+                    </div>
+                  </div>
                 </div>
-                <!--/.Second slide-->
-              </div>
-              <!--/.Slides-->
-              <br/>
+              {% endfor %}
             </div>
-            <!--/.Carousel Wrapper-->
+            <button type="button" class="btn btn-secondary btn-block">See more</button>
+
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

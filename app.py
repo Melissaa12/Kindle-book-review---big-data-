@@ -240,14 +240,14 @@ def index_page_landing():
 @app.route('/corr-calculate',methods=['POST'])
 def corr():
    #1. extract asin and review text AND CREATE NEW COLUMN REVIEWLENGTH
-   reviews_df = spark.read.csv("hdfs://0.0.0.0:19000/project/kindle_reviews.csv", header=True, sep=",")
+   reviews_df = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project/kindle_reviews.csv", header=True, sep=",")
    reviews = reviews_df.select("asin","reviewText")
    reviews = reviews.withColumn("reviewText", length(reviews.reviewText))
    reviews_avg = reviews.groupBy("asin").agg(mean("reviewText").alias("average_reviewLength"))
 
    print(reviews_avg.head(5))
    #2. extract asin and price
-   price_df = spark.read.csv("hdfs://0.0.0.0:19000/project/mongo_price_asin.csv", header=True, sep=",")
+   price_df = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project/mongo_price_asin.csv", header=True, sep=",")
 
 #    #3. join based on asin
    combined_table = price_df.join(reviews_avg, price_df.asin == reviews_avg.asin)
