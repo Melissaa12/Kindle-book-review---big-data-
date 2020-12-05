@@ -49,4 +49,4 @@ python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token $n
 yes Y|sudo apt install python-pip3
 pip install --upgrade pip3
 pip3 install paramiko
-python3 sshEC2.py $access_key_id $aws_secret_access_key $aws_session_token $numberOfSlaves
+python3 sshEC2.py $access_key_id $aws_secret_access_key $aws_session_token $numberOfSlaves ${region}
