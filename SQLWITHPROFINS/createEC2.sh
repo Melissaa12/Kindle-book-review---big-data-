@@ -36,19 +36,20 @@ AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}
 AWS_SESSION_TOKEN=${aws_session_token}
 REGION=${region}
 EOF
-source /etc/environment
+# source /etc/environment
+source <(sudo cat /etc/environment)
 echo $AWS_SESSION_TOKEN
 echo $KEYNAME
 
 
 
 # installing requirements 
-export LC_ALL=C
-pip3 install boto3
-pip3 install pyyaml
-yes Y|sudo apt install python-pip3
-pip3 install --upgrade pip
-pip3 install paramiko
+# export LC_ALL=C
+# pip3 install boto3
+# pip3 install pyyaml
+# yes Y|sudo apt install python-pip3
+# pip3 install --upgrade pip
+# pip3 install paramiko
 #calling python script that creates all the EC2 instances based on cloudformation
 python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token $numberOfSlaves ${region}
 
