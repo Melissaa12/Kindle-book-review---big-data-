@@ -21,8 +21,9 @@
             </div>
           </li>
         </ul>
-        <a class="nav-link btn-outline-secondary" href="/add-review">Add Review</a>
-        <a class="nav-link btn-outline-secondary" href="/search">Search</a>
+        <a class="nav-link btn-outline-secondary" href="{{url_for('add_book')}}">Add Book</a>
+        <a class="nav-link btn-outline-secondary" href="{{url_for('add_review')}}">Add Review</a>
+        <a class="nav-link btn-outline-secondary" href="{{url_for('search')}}">Search</a>
     </nav>
 
     <div style="padding: 60px;">
@@ -60,28 +61,19 @@
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Sort by
                   </button>
-                  <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                    <li class="dropdown-item"><a href="#">Rating</a></li>
-                    <li class="dropdown-submenu">
-                      <a  class="dropdown-item" href="#">Genre</a>
-                      <ul class="dropdown-menu">
-                        <li class="dropdown-submenu">
-                          <a class="dropdown-item" href="#">Books</a>
-                          <ul class="dropdown-menu">
-                              <li class="dropdown-item"><a href="#">Literature & Fiction</a></li>
-                            <li class="dropdown-item"><a href="#">Mystery, Thriller & Suspense</a></li>
-                            <li class="dropdown-item"><a href="#">Thriller & Suspense</a></li>
-                            <li class="dropdown-item"><a href="#">Suspense</a></li>
-                          </ul>
-                        </li>
-                        <li class="dropdown-submenu">
-                          <a class="dropdown-item" href="#">Kindle Store</a>
-                          <ul class="dropdown-menu">
-                              <li class="dropdown-item"><a href="#">Literature & Fiction</a></li>
-                          </ul>
-                      </ul>
-                    </li>
-                  </ul>
+                  <select class="form-control" id="genretype">
+                    <option>Mystery, Thriller & Suspense</option>
+                    <option>Health, Fitness & Dieting</option>
+                    <option>Worship & Devotion</option>
+                    <option>Gay & Lesbian</option>
+                    <option>Science Fiction</option>
+                    <option>Cookbooks, Food & Win</option>
+                    <option>Comics & Graphic Novels</option>
+                    <option>Politics & Social Sciences</option>
+                    <option>Psychology & Counseling</option>
+                    <option>Love & Romance</option>
+                    <option>Medical Books'</option>
+                  </select>
                 </div>
             </div>
           </div>

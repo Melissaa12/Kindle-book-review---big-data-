@@ -18,7 +18,17 @@ tweakJson.py - edits the cloudformation json file such that it fits the number o
 
 #############################################Setting up the MongoDB#################################################################
 
+This EC2 instance is created using BOTO3, SSHd into with the help of Paramiko. We install various dependancies, clone the runMongo.py and run it in the background.
 
+We download the metadata JSON from the link provided by the Course Project Description page. 
+After setting up MongoDB and the dependancies on the EC2 instance, we import the JSON onto MongoDB using
+"mongoimport --db kindle --collection metadata --file meta_Kindle_Store.json --legacy"
+
+Once that is done, we can install our python packages like Flask and PyMongo to setup a flask server on the MongoDB instance. 
+The purpose of this flask server is to provide API endpoints which allow you to interact with the MongoDB database. 
+The code is located in the runMongo.py file provided in https://github.com/Hsengiv2000/BigdataMongo/blob/main/runmongo.py
+
+We run nohup python BigdataMongo/runmongo.py and write the output to a log.txt file.
 
 #############################################Setting up Sql Server#################################################################
 
@@ -30,17 +40,19 @@ sql.sh 		 -  gets data using data.sh
 			 -  Table kindle is the main database with all the data
 			 -  Table reviewers is a table with just the reviewerID and the reviewer name so like a log for reviewers
 			 -  Create another user for external connections like for the flask frontend
-			 -  calls hadoopinstall.sh for the main node and hadoopinstallother.sh
-			 -  calls hadoopinstall2.sh for starting up of hadoop and also spark installation of the masternode 
-			 -  calls sparkother.sh for all other datanodes
-			 -  calls sparkrun.sh for masternode to start running spark
-			 -  calls sparkrun2.sh for masternode to check that spark is running with an example and also shifting all the required files we need for the system to HDFS
+
+
 Setting up the DataAnalytics Server:
 
 databash.sh  -  general controller for automation for DataAnalytics server across all nodes
 			 -  calls datanew.sh for creating user for each ec2 in hadoop cluster and generate their keys
 			 -  use workaround 2 to share the keys 
 			 -  call datajava.sh to download java for each node
+			 -  calls hadoopinstall.sh for the main node and hadoopinstallother.sh
+			 -  calls hadoopinstall2.sh for starting up of hadoop and also spark installation of the masternode 
+			 -  calls sparkother.sh for all other datanodes
+			 -  calls sparkrun.sh for masternode to start running spark
+			 -  calls sparkrun2.sh for masternode to check that spark is running with an example and also shifting all the required files we need for the system to HDFS
 
 datanew.sh   -  for all nodes 
    			 -  config for etc/hosts
@@ -81,7 +93,7 @@ app.py(dbproject/app.py) - frontend flask code
 deletestack.sh - calls deletestack.py with the saved aws configurations
 deletestack.py - deletes the stack and the aws key that was created
 
-dependencies.sh - automates setup for the freshinstance to run all scripts
+dependencies.sh - automates setup dependencies for the freshinstance to run all scripts
 
 shudownhadoopcluster.sh - bashscipt to call shutdown.sh
 shutdown.sh - shutdown both the hadoop and spark cluster

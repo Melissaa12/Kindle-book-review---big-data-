@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request, redirect,url_for, flash
-from flask_restful import Api, Resource, reqparse
-import json
+from flask import Flask, render_template, request, redirect,url_for, flash, session, json
+from flask_restful import Api, Resource, reqparse, request
 import jinja2
 from flask import json
-from flask_restful import Resource, request, reqparse
 from bson.json_util import dumps, default
 from random import random
 import pymongo
@@ -13,7 +11,6 @@ import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
 import string
-import html
 import csv
 import requests
 from urllib.request import urlopen
@@ -28,7 +25,7 @@ from pyspark import SparkContext
 from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
-from pyspark.sql.functions import udf, col,mean
+from pyspark.sql.functions import udf, col, mean
 from pyspark.sql.functions import length
 from pyspark.mllib.feature import HashingTF
 from pyspark.sql.types import StringType
@@ -48,8 +45,8 @@ mongopublicipadd = 'http://' + mongopublicip + ":" + port
 print('This is the sql public IP Address' +  sys.argv[1])
 sqlpublicip = sys.argv[2]
 
-#mongopublicip = '54.174.31.194'
-#sqlpublicip = '54.224.212.35'
+# mongopublicip = '54.221.99.204'
+# sqlpublicip = '3.80.241.110'
 
 
 app = Flask(__name__)
@@ -68,6 +65,8 @@ class GetBookDetails():
             #r = requests.get('http://3.238.100.151:3306/asin/'+asin)
             r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/asin/" + asin)
             imgUrl = r.text.strip().split("####")[0]
+            if imgUrl == 'NOIMAGE' or imgUrl == 'NOTAVALIABLE':
+                imgUrl = 'static/default_book.png'
             overview = r.text.strip().split("####")[1]
             ab = r.text.strip().split("####")[2]
             ab = ab.strip("]").strip("[").strip().split(",")
@@ -80,6 +79,7 @@ class GetBookDetails():
                 print("Unable to connect to MongoDB: {}".format(e))
 
     def insertLog(self,log):
+        #insert log into Mongodb
         #http://54.91.81.131:3306/log?code=200&method=GET&function=reviews&time=12000
 
         insert_values = {}
@@ -91,6 +91,7 @@ class GetBookDetails():
         print("done")
 
     def addBook(self, author, time, title, overview ):
+        #add new book into mongodb
         #http://34.235.169.17:3306/addbook?author=supp&time=1021&title=yodawg&overview=adogdied
     
         new_book = {}
@@ -103,6 +104,7 @@ class GetBookDetails():
         print("book inserted")
 
     def getTitles(self):
+        #get all titles from mongodb
         
         url = "http://" + self.mongoip + ":" + self.port + "/titles"
         html = urlopen(url).read()
@@ -115,6 +117,7 @@ class GetBookDetails():
         return titles
 
     def getRandom(self):
+        #get random books for display on front page
         url = "http://" + self.mongoip + ":" + self.port + "/rando"
         html = urlopen(url).read()
         soup = BeautifulSoup(html, features="html.parser")
@@ -131,20 +134,44 @@ class GetBookDetails():
         return book_display
 
     def searchTitle(self,title):
-        r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/asin/" + title)
+        #search book in mongodb based on title
+        r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/title/" + title)
         imgUrl = r.text.strip().split("####")[0]
         overview = r.text.strip().split("####")[1]
         ab = r.text.strip().split("####")[2]
         ab = ab.strip("]").strip("[").strip().split(",")
         ab = [i.strip().strip("u'").strip("'") for i in ab]
-        #overview = unquote(overview)
+        overview = unquote(overview)
         overview = html.unescape(overview)
         return imgUrl, overview, ab
 
+    def searchAuthor(self,title):
+        #search book in mongodb based on author
+        r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/author/" + title)
+        imgUrl = r.text.strip().split("####")[0]
+        overview = r.text.strip().split("####")[1]
+        ab = r.text.strip().split("####")[2]
+        ab = ab.strip("]").strip("[").strip().split(",")
+        ab = [i.strip().strip("u'").strip("'") for i in ab]
+        overview = unquote(overview)
+        overview = html.unescape(overview)
+        return imgUrl, overview, ab
+    
+    def sortGenre(self, genre):
+        #sort by genre and return book asins
+        #http://54.85.36.63:3306/genre?genre=Books
+        #r = requests.get('http://3.238.100.151:3306/asin/'+asin)
+        genres={}
+        genres['genre'] = genre
+        r = requests.get("http://"+ self.mongoip + ":" + self.port + "/genre", params = genres)
+        asins = r.text.strip().split("####")
+        asins = html.unescape(asins)
+        asins = [i.strip().strip("\n").strip("'") for i in asins]
+        return asins
 
     def getDetails(self, asin):
 
-
+        #get book details based on asin
         default_image = 'static/default_book.png'
         default_overview = 'Overview not available.'
         default_recommended = 'Recommended not available'
@@ -161,7 +188,7 @@ class GetBookDetails():
 
     
     def get(self, asin):
-
+        #get book details alogn with recommended book details
         default_image = 'static/default_book.png'
         default_overview = 'Overview not available.'
         default_recommended = 'Recommended not available'
@@ -199,7 +226,7 @@ class GetReviewData():
                 for row in cursor.fetchall()]
 
     def get(self, asin):
-
+        #get review data ffrom mysql from asin
         connection = self.connectMysql()
 
         try:
@@ -207,7 +234,7 @@ class GetReviewData():
             query = "SELECT * FROM kindle WHERE asin = '%s'" % (asin)
             cursor.execute(query)
             results = self.dictfetchall(cursor)
-            default_ratings = 'No Ratings'
+            default_ratings = 0
             default_reviews = []
             ratings = []
             username_reviews = []
@@ -233,7 +260,7 @@ class GetReviewData():
             print("Cursor is closed")
 
     def put(self, insert_query, values):
-
+        #add review with log
         connection = self.connectMysql()
 
         try:
@@ -256,6 +283,7 @@ class GetReviewData():
             print("Cursor is closed")
 
     def getAllReviews(self,r_id):
+        #get all reviews for user
         connection = self.connectMysql()
         print("connected")
         cursor = connection.cursor()
@@ -276,7 +304,7 @@ class GetReviewData():
         return all_review_data
 
     def totalReviews(self):
-
+        #get all reviews and write into csv
         connection = self.connectMysql()
         try:
             cursor = connection.cursor()
@@ -297,27 +325,41 @@ class GetReviewData():
             cursor.close()
 
 
+
+
 @app.route('/', methods=['GET'])
 def index_page_landing():
     review = GetReviewData(sqlpublicip, port)
     reviews = review.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
     book = GetBookDetails(mongopublicip, port)
     bookdisplay = book.getRandom()
+    genretype = request.args.get('genretype')
+    if genretype:
+        bookdisplay = book.sortGenre()
+
     #print(reviews)
     return render_template('index.html',reviews=reviews, book_display = bookdisplay)
     #return render_template('index3.html')
 
 @app.route('/search', methods=['GET'])
 def search():
-    title = request.args.get('title') 
+    search_value = request.args.get('searchvalue') 
     search_option = request.args.get('searchoption')
+    print(search_option,  search_value)
     search_results = (None, None, None)
-    if title:
-        title = quote(title)
+
+    if search_option == 'Title':
+        title = quote(search_value)
         book = GetBookDetails(mongopublicip, port)
         search_results = book.searchTitle(title)
-        #session['results'] = search_results
-        return redirect('/search')
+
+    elif search_option == 'Author':
+        author = quote(search_value)
+        book = GetBookDetails(mongopublicip, port)
+        search_results = book.searchAuthor(author)
+
+    if search_results[0] == 'NOIMAGE':
+        search_results[0] = 'static/default_book.png'
 
     return render_template('search.html', search = search_results)
 
@@ -342,7 +384,7 @@ def add_book():
         book.addBook(author, time, title, overview)
         return redirect('/')
 
-    return render_template('addNewBookReview.html')
+    return render_template('addNewBook.html')
 
 @app.route('/book/<string:asin>')
 def hello_world(asin):
@@ -502,6 +544,5 @@ def searchda():
 
     return render_template('tfidfresult.html', data="The tfidf values for each documents are shown in the terminal. If input word does not exist in dictionary, all tf-idf score will be displayed. Else, tf-idf score of input word will be shown for each document. You can find the result in the /result2 directory by typing hdfs dfs -ls /result2 and hdfs dfs -cat [file-name] to read the csv files")
 
-
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3306)
+    app.run()

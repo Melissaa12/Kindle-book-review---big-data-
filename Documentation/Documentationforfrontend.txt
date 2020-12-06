@@ -1,0 +1,24 @@
+###############################################################################   Features    #############################################################################
+
+Routes
+/: 
+* Navigation bar. When book reviews is clicked, the page is redirected to /. Analytics drops down to show tf-idf or correlation. Add book links to a page where users can add new book. Add review links to add review for existing books. Search links to a search page
+* Your reviews. Shows a list of books the user has reviewed, with the review the user wrote. On click, the book page for the book opens up
+* Browse books. A list of recommended books are shown with a short overview. They can be sorted according to genre. On click, the book clicked opens up to show a full overview
+
+/correlation:
+* Can calculate correlation
+
+/tf-idf:
+* Calculate tf-idf
+
+/add-book:
+* Users can enter in title, author and summary of book
+* Book will then be added to the database on submit
+
+/add-review:
+* Users can search title, write a summary of the book, enter in the genre of the book, and then rate and review the book
+* New rating will be added to database, and will be shown on home page under your reviews on submit
+
+/search:
+* Users can search for existing books by author and title
