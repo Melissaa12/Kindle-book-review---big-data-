@@ -18,19 +18,19 @@ echo ${8}
 echo ${9}
 echo ${10}
 
+#save ip of masternode for later use
+sudo tee /etc/environment -a <<EOF
+MASTERIP=${2}
+EOF
+
+#initial configuration and key generation
 echo ssh into master instance
 sudo chmod 600 $1
 ssh -o StrictHostKeyChecking=no ubuntu@$2 -i $1 'bash -s' < ./datanew.sh $3 $5 $7 $9 ${11} ${13} ${15} ${17} ${19} ${21}
-
-# echo ssh into secondary instance
 ssh -o StrictHostKeyChecking=no ubuntu@$4 -i $1 'bash -s' < ./datanew.sh $3 $5 $7 $9 ${11} ${13} ${15} ${17} ${19} ${21}
 if [[ ${6} != "STOP" ]]; then
-# echo ssh into slaves
     ssh -o StrictHostKeyChecking=no ubuntu@$6 -i $1 'bash -s' < ./datanew.sh $3 $5 $7 $9 ${11} ${13} ${15} ${17} ${19} ${21}
-    echo this is 8
-    echo ${8}
     if [[ ${8} != "STOP" ]]; then 
-        echo this is correct datanew
         ssh -o StrictHostKeyChecking=no ubuntu@$8 -i $1 'bash -s' < ./datanew.sh $3 $5 $7 $9 ${11} ${13} ${15} ${17} ${19} ${21}
         if [[ ${10} != "STOP" ]]; then
             ssh -o StrictHostKeyChecking=no ubuntu@${10} -i $1 'bash -s' < ./datanew.sh $3 $5 $7 $9 ${11} ${13} ${15} ${17} ${19} ${21}
@@ -57,10 +57,9 @@ if [[ ${6} != "STOP" ]]; then
         fi
     fi
 fi
-# # this is to generate the ssh key pair
-# ssh -o StrictHostKeyChecking=no ubuntu@$2 -i $1 'bash -s' < ./datanameonly.sh 
 
-# #walkaround2
+
+# using walkaround2 to share the keys
 ssh ubuntu@$2 -i $1 \
 "sudo cat /home/hadoop/.ssh/id_rsa.pub" \
 | ssh ubuntu@$2 -i $1 \
@@ -72,13 +71,11 @@ ssh ubuntu@$2 -i $1 \
 
 
 if [[ ${6} != "STOP" ]]; then
-# echo ssh into slaves
     ssh ubuntu@$2 -i $1 \
     "sudo cat /home/hadoop/.ssh/id_rsa.pub" \
     | ssh ubuntu@$6 -i $1 \
     "sudo cat - | sudo tee -a /home/hadoop/.ssh/authorized_keys"
     if [[ ${8} != "STOP" ]]; then
-        echo this is correct share key 
         ssh ubuntu@$2 -i $1 \
         "sudo cat /home/hadoop/.ssh/id_rsa.pub" \
         | ssh ubuntu@$8 -i $1 \
@@ -125,32 +122,12 @@ if [[ ${6} != "STOP" ]]; then
     fi
 fi
 
-# ssh ubuntu@35.175.128.55 -i /Users/ryan/Desktop/DBProject/SQLWITHPROFINS/dbproject.pem \
-# "sudo cat /home/hadoop/.ssh/id_rsa.pub" \
-# | ssh ubuntu@35.175.128.55 -i /Users/ryan/Desktop/DBProject/SQLWITHPROFINS/dbproject.pem \
-# "sudo cat - | sudo tee -a /home/hadoop/.ssh/authorized_keys"
-
-# ssh ubuntu@34.204.174.108 -i /Users/ryan/Desktop/DBProject/SQLWITHPROFINS/dbproject.pem \
-# "sudo cat /home/hadoop/.ssh/id_rsa.pub" \
-# | ssh ubuntu@3.227.249.64 -i /Users/ryan/Desktop/DBProject/SQLWITHPROFINS/dbproject.pem \
-# "sudo cat - | sudo tee -a /home/hadoop/.ssh/authorized_keys"
-
-# ssh ubuntu@34.204.174.108 -i /Users/ryan/Desktop/DBProject/SQLWITHPROFINS/dbproject.pem \
-# "sudo cat /home/hadoop/.ssh/id_rsa.pub" \
-# | ssh ubuntu@3.236.141.9 -i /Users/ryan/Desktop/DBProject/SQLWITHPROFINS/dbproject.pem \
-# "sudo cat - | sudo tee -a /home/hadoop/.ssh/authorized_keys"
-
-
-#setup java
+#setup java on each node
 ssh -o StrictHostKeyChecking=no ubuntu@$2 -i $1 'bash -s' < ./datajava.sh 
-
-# echo ssh into secondary instance
 ssh -o StrictHostKeyChecking=no ubuntu@$4 -i $1 'bash -s' < ./datajava.sh 
 if [[ ${6} != "STOP" ]]; then
-# echo ssh into slaves
 ssh -o StrictHostKeyChecking=no ubuntu@$6 -i $1 'bash -s' < ./datajava.sh
     if [[ ${8} != "STOP" ]]; then 
-        echo this is correct datajava
         ssh -o StrictHostKeyChecking=no ubuntu@$8 -i $1 'bash -s' < ./datajava.sh 
         if [[ ${10} != "STOP" ]]; then
             ssh -o StrictHostKeyChecking=no ubuntu@${10} -i $1 'bash -s' < ./datajava.sh 
@@ -177,6 +154,7 @@ ssh -o StrictHostKeyChecking=no ubuntu@$6 -i $1 'bash -s' < ./datajava.sh
         fi
     fi
 fi
+#hadoop installation, hadoopinstall.sh for name node and hadoopinstallother.sh for other data nodes
 ssh -o StrictHostKeyChecking=no ubuntu@$2 -i $1 'bash -s' < ./hadoopinstall.sh 
 ssh -o StrictHostKeyChecking=no ubuntu@$4 -i $1 'bash -s' < ./hadoopinstallother.sh 
 if [[ ${6} != "STOP" ]]; then

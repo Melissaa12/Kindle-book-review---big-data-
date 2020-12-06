@@ -18,15 +18,12 @@ echo $MONGOIP
 echo $SQLIP
 echo $MASTERIP
 echo "${WEBIP}:5000"
-
+#Installing Reuirements
 sudo adduser hadoop --gecos "" --disabled-password
 sudo sh -c 'echo "hadoop ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/90-hadoop'
 sudo su hadoop
 sudo apt-get update
 sudo apt-get install git
-
-
-
 sudo git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git
 python3 -V
 yes Y|sudo apt install python3-venv
@@ -65,5 +62,6 @@ echo sqlip
 echo $SQLIP
 echo masterip
 echo $MASTERIP
+#running flask frontend
 python app.py $MONGOIP $SQLIP $MASTERIP
 
