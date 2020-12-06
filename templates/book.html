@@ -20,6 +20,7 @@
           </div>
         </li>
       </ul>
+      <a class="nav-link btn-outline-secondary" href="/add_book">Add Book</a>
       <a class="nav-link btn-outline-secondary" href="/add-review">Add Review</a>
       <a class="nav-link btn-outline-secondary" href="/search">Search</a>
   </nav>
@@ -47,21 +48,7 @@
                       <h6 class="card-subtitle mb-2 text-muted">{{review[1]}}/5</h6>
                       <p class="card-text" style="height: 100px; overflow: hidden;"><small class="text-muted">{{review[2]}}</small></p>
                       <a tabindex="0" class="btn btn-outline-dark btn-sm popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" data-content="{{review[2]}}" style="max-width: 100%;">See all</a>
-                      <a tabindex="0" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#myModal">See all</a>
                     </div>
-              </div>
-            </div>
-            <div id="myModal" class="modal fade" role="dialog">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="padding: 30px;">
-                  <div class="modal-header">
-                    <h5 class="card-title">{{review[0]}}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{review[1]}}/5</h6>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  </div>
-                  <p class="card-text"><small class="text-muted">{{review[2]}}</small></p>
-                </div>
-            
               </div>
             </div>
         {% endfor %}
