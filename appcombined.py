@@ -408,7 +408,7 @@ def corr():
    return render_template('tfidfresult.html', data=correlation)
 
 @app.route('/predict', methods=['POST'])
-def search():
+def searchda():
    #  ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
 
     wordR = request.form['tfidfword']
