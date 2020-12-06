@@ -41,13 +41,13 @@ echo $AWS_SESSION_TOKEN
 echo $KEYNAME
 
 
- . venv/bin/activate
+
 # installing requirements 
 export LC_ALL=C
 pip3 install boto3
 pip3 install pyyaml
 yes Y|sudo apt install python-pip3
-pip install --upgrade pip3
+pip3 install --upgrade pip
 pip3 install paramiko
 #calling python script that creates all the EC2 instances based on cloudformation
 python3 createEC2.py $access_key_id $aws_secret_access_key $aws_session_token $numberOfSlaves ${region}
