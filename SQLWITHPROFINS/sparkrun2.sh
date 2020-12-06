@@ -12,7 +12,7 @@ EOF
 source ~/.bashrc
 sudo git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git 
 wget https://istd50043.github.io/assets/scripts/get_data.sh
-chmod +x get_data.shc
+chmod +x get_data.sh
 ./get_data.sh
 sudo su hadoop
 /opt/hadoop-3.3.0/bin/hdfs dfs -mkdir -p /project
