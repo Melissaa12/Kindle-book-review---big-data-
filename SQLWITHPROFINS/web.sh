@@ -63,5 +63,5 @@ echo $SQLIP
 echo masterip
 echo $MASTERIP
 #running flask frontend
-python app.py $MONGOIP $SQLIP $MASTERIP
+python appcombined.py $MONGOIP $SQLIP $MASTERIP
 
