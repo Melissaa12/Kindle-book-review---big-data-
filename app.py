@@ -20,22 +20,20 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import quote
-
-
-
 import sys
 
-
-#print('This is the mongo public IP Address' +  sys.argv[2])
-#mongopublicip = sys.argv[1]
-#mongopublicipadd = 'http://' + mongopublicip + '/asin/'
-
-#print('This is the sql public IP Address' +  sys.argv[1])
-#sqlpublicip = sys.argv[2]
-
-mongopublicip = '54.174.31.194'
-sqlpublicip = '54.224.212.35'
 port='3306'
+
+print('This is the mongo public IP Address' +  sys.argv[2])
+mongopublicip = sys.argv[1]
+mongopublicipadd = 'http://' + mongopublicip + ":" + port
+
+print('This is the sql public IP Address' +  sys.argv[1])
+sqlpublicip = sys.argv[2]
+
+#mongopublicip = '54.174.31.194'
+#sqlpublicip = '54.224.212.35'
+
 
 app = Flask(__name__)
 api = Api(app)

@@ -7,80 +7,84 @@
     <title>FlaskBlog</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="/">Book reviews</a>
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Analytics
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/correlation">Correlation</a>
-              <a class="dropdown-item" href="/tf-idf">tf-idf</a>
-            </div>
-          </li>
-        </ul>
-    </nav>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Book reviews</a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Analytics
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/correlation">Correlation</a>
+            <a class="dropdown-item" href="/tf-idf">tf-idf</a>
+          </div>
+        </li>
+      </ul>
+      <a class="nav-link btn-outline-secondary" href="/add-review">Add Review</a>
+      <a class="nav-link btn-outline-secondary" href="/search">Search</a>
+  </nav>
 
-    <div class="container" style="padding-top: 60px">
+    <div style="padding-top: 60px">
       <div class="row">
-        <div class="col-sm">
-          <img src="{{ img }}" class="card-img-top" alt="...">
+        <div class="col-md mb-4" style="height: fit-content;">
+          <img src="{{ img }}" class="card-img-top" alt="..." style="max-height: 280px; width: auto; padding-left: 360px;">
         </div>
-        <div class="col-sm">
+        <div class="col-md">
             <h2>{{ Book_title }}</h2>
-            <p style="color:grey">{{ Author }}</p>
-            <div class="rating"> {{ avg_rating }} </div>
+            <div class="rating"> {{ avg_rating }}/5 </div>
             <p>{{ overview }}</p>
-        </div>
-        <div class="col-sm">
-            <p>Rate this book</p>
-            <div class="rating">
-                <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
-            </div>
-            <div class="form-group">
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
+            <a tabindex="0" class="btn btn-outline-dark btn-sm" href="/add-review">Add review</a>
         </div>
       </div>
     </div>
 
     <div class="row" style="padding-left: 100px; padding-top: 40px">
         {% for review in reviews if reviews %}
-            <div class="card mb-4" style="width: 18rem; margin: 20px;">
-              <div class="card-body">
-                  <div class="row">
-                    <div class="col-sm-4">
-                        <img src="{{ img }}" class="card-img-top" alt="..." style="width:50px; height:50px; object-fit:cover; border-radius:50%;">
+            <div class="card mb-4" style="max-width: 400px; margin: 5px;">
+              <div class="row no-gutters">
+                    <div class="card-body">
+                      <h5 class="card-title">{{review[0]}}</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">{{review[1]}}/5</h6>
+                      <p class="card-text" style="height: 100px; overflow: hidden;"><small class="text-muted">{{review[2]}}</small></p>
+                      <a tabindex="0" class="btn btn-outline-dark btn-sm popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" data-content="{{review[2]}}" style="max-width: 100%;">See all</a>
+                      <a tabindex="0" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#myModal">See all</a>
                     </div>
-                    <div class="col-sm-8">
-                        <h5 class="card-title">{{review[0]}}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{review[1]}}</h6>
-                    </div>
+              </div>
+            </div>
+            <div id="myModal" class="modal fade" role="dialog">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="padding: 30px;">
+                  <div class="modal-header">
+                    <h5 class="card-title">{{review[0]}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{review[1]}}/5</h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                   </div>
-                <p class="card-text">{{review[2]}}</p>
+                  <p class="card-text"><small class="text-muted">{{review[2]}}</small></p>
+                </div>
+            
               </div>
             </div>
         {% endfor %}
+    </div>
 
-        <div style="padding: 60px;">
-            <h2 style="padding-left: 35px">Recommended</h2>
-            <div class="row row-cols-1 row-cols-md-5">
-              {% for recommended in recommended%}
-                <div class="col mb-4">
-                  <div class="card">
-                    <img src="{{ recommended[0] }}" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ Book_title }}</h5>
-                      <p class="card-text">{{ recommended[1] }}</p>
-                        <a href="{{recommended[2]}}" class="stretched-link"></a>
-                    </div>
+    <div style="padding: 60px;">
+        <h2 style="padding-left: 35px">Recommended</h2>
+        <div class="row row-cols-1 row-cols-md-5" style="padding-left: 35px">
+          {% for recommended in recommended%}
+            <div class="col mb-3" style="max-width: 400px; margin: 5px;">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <img src="{{recommended[0]}}" class="card-img-top" alt="...">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <p class="card-text">{{ recommended[1] }}</p>
+                    <a href="{{recommended[2]}}" class="stretched-link"></a>
                   </div>
                 </div>
-              {% endfor %}
+              </div>
             </div>
-            <button type="button" class="btn btn-secondary btn-block">See more</button>
-
+          {% endfor %}
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -88,3 +92,9 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
+
+<script>
+$('.popover-dismiss').popover({
+  trigger: 'focus'
+})
+</script>
