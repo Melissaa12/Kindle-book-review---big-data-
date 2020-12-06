@@ -23,7 +23,7 @@ sudo tee /etc/hosts << EOF
 
 ${1} com.avg.master
 ${2} com.avg.slave0
-${3} .slave1
+${3} com.avg.slave1
 ${4} com.avg.slave2
 ${5} com.avg.slave3
 ${6} com.avg.slave4
