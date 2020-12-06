@@ -21,6 +21,23 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import quote
 import sys
+import numpy as np
+import pandas as pd
+import math 
+from pyspark import SparkContext
+from pyspark import SparkConf
+from pyspark.sql.session import SparkSession
+from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
+from pyspark.sql.functions import udf, col,mean
+from pyspark.sql.functions import length
+from pyspark.mllib.feature import HashingTF
+from pyspark.sql.types import StringType
+conf=SparkConf()
+masternodeip = sys.argv[3]
+conf.set("spark.driver.memory", "5g")
+sc = SparkContext.getOrCreate(conf)
+sc.setCheckpointDir("hdfs://"+masternodeip+':9000'+"/project")
+spark = SparkSession(sc)
 
 port='3306'
 
@@ -62,7 +79,7 @@ class GetBookDetails():
         except Exception as e:
                 print("Unable to connect to MongoDB: {}".format(e))
 
-    def putValues(self,log):
+    def insertLog(self,log):
         #http://54.91.81.131:3306/log?code=200&method=GET&function=reviews&time=12000
 
         insert_values = {}
@@ -72,6 +89,18 @@ class GetBookDetails():
         insert_values['time'] = log[3]
         r = requests.get("http://"+ self.mongoip + ":" + self.port + "/log", params = insert_values)
         print("done")
+
+    def addBook(self, author, time, title, overview ):
+        #http://34.235.169.17:3306/addbook?author=supp&time=1021&title=yodawg&overview=adogdied
+    
+        new_book = {}
+        new_book['author'] = author
+        new_book['time'] = time
+        new_book['title'] = title
+        new_book['overview'] = overview
+
+        r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/addbook", params = new_book)
+        print("book inserted")
 
     def getTitles(self):
         
@@ -116,39 +145,40 @@ class GetBookDetails():
     def getDetails(self, asin):
 
 
-        default_image = '/static/purple.jpg'
+        default_image = 'static/default_book.png'
         default_overview = 'Overview not available.'
         default_recommended = 'Recommended not available'
 
-        try:
-            data = self.getValues(asin)
+        
+        data = self.getValues(asin)
 
-            if data != None:
-                image, overview, recommended = data[0], data[1], data[2]
-                return (image or default_image, overview or default_overview, recommended or default_recommended)
+        if data != None:
+            image, overview, recommended = data[0], data[1], data[2]
+            return (image or default_image, overview or default_overview, recommended or default_recommended)
 
-            else:
-                return (["Not available","Not available","Not available"])  
+        else:
+            return ([default_image, default_overview, default_recommended])  
 
-        except Exception as e:
-            print("Unable to retrieve data: {}".format(e))
     
     def get(self, asin):
-        try:
-            image, overview, recommended = self.getDetails(asin)
-            default_recos = "No recs"
-            recommended_images_overviews = []
-            for i in range(min(4,len(recommended))):
-                book = recommended[i]
-                #print(book)
-                r_image, r_overview, r_recommended = self.getDetails(book)
-                recommended_images_overviews.append((r_image, r_overview, book))
 
-            #print(image, overview, recommended_images_overviews or default_recos)
-            return (image, overview, recommended_images_overviews or default_recos)
-        
-        except:
-            return {"Message": "Failed to retrieve data"}, 500
+        default_image = 'static/default_book.png'
+        default_overview = 'Overview not available.'
+        default_recommended = 'Recommended not available'
+
+        image, overview, recommended = self.getDetails(asin)
+        recommended_images_overviews = []
+        for i in range(min(4,len(recommended))):
+
+            book = recommended[i]
+            #print(book)
+            r_image, r_overview, r_recommended = self.getDetails(book)
+            recommended_images_overviews.append((r_image, r_overview, book))
+
+        #print(image, overview, recommended_images_overviews or default_recos)
+        return (image or default_image, overview or default_overview, recommended_images_overviews or default_recommended)
+
+    
 
 class GetReviewData():
 
@@ -214,7 +244,7 @@ class GetReviewData():
             current_time = now.strftime("%H:%M:%S")
             log = (200, 'PUT', 'addreview', current_time)
             c = GetBookDetails(mongopublicip, port)
-            c.putValues(log)
+            c.insertLog(log)
             return {"Message": "Inserted"}, 200
 
         except Exception as e:
@@ -253,7 +283,7 @@ class GetReviewData():
             query = "SELECT asin, reviewText FROM kindle"
             cursor.execute(query)
             results = cursor.fetchall()
-            
+           
             fp = open('/Users/varsha/Desktop/asin_review.csv', 'w')
             myFile = csv.writer(fp)
             myFile.writerows(results)
@@ -269,10 +299,10 @@ class GetReviewData():
 
 @app.route('/', methods=['GET'])
 def index_page_landing():
-    r = GetReviewData(sqlpublicip, port)
-    reviews = r.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
-    m = GetBookDetails(mongopublicip, port)
-    bookdisplay = m.getRandom()
+    review = GetReviewData(sqlpublicip, port)
+    reviews = review.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
+    book = GetBookDetails(mongopublicip, port)
+    bookdisplay = book.getRandom()
     #print(reviews)
     return render_template('index.html',reviews=reviews, book_display = bookdisplay)
     #return render_template('index3.html')
@@ -280,17 +310,39 @@ def index_page_landing():
 @app.route('/search', methods=['GET'])
 def search():
     title = request.args.get('title') 
-    
+    search_option = request.args.get('searchoption')
+    search_results = (None, None, None)
     if title:
         title = quote(title)
-        m = GetBookDetails(mongopublicip, port)
-        search_results = m.searchTitle(title)
-        print(search_results)
-        return redirect('search.html',search = search_results)
-    #print(reviews)
-    return render_template('search.html', search = (None,None,None))
-    #return render_template('index3.html')
+        book = GetBookDetails(mongopublicip, port)
+        search_results = book.searchTitle(title)
+        #session['results'] = search_results
+        return redirect('/search')
 
+    return render_template('search.html', search = search_results)
+
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+
+    title = request.args.get('booktitle') 
+    author = request.args.get('author') 
+    time = current_time 
+    overview = request.args.get('summary') 
+
+    if author and time and title and overview:
+        print("ok")
+        author = quote(author)
+        time = quote(time)
+        title = quote(title)
+        overview = quote(overview)
+        book = GetBookDetails(mongopublicip, port)
+        book.addBook(author, time, title, overview)
+        return redirect('/')
+
+    return render_template('addNewBookReview.html')
 
 @app.route('/book/<string:asin>')
 def hello_world(asin):
@@ -307,7 +359,7 @@ def hello_world(asin):
 def create_query(title, summary, genre, rating, review):
     query = ''
     query = "INSERT INTO kindle (idx, asin, overall, reviewText, summary, reviewerID) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (None,'ABC45678', rating, review, summary, 'A1F6404F1VG29J')
+    values = (None,'ABC45678', rating, review, summary, 'A1UG4Q4D3OAH3A')
     print('query created')
     return query,values
 
@@ -332,16 +384,124 @@ def add_review():
         print("ok")
         insert_query, values = create_query(title,summary,genre,rating,review)
         print(insert_query,values)
-        r = GetReviewData(sqlpublicip,port)
-        r.put(insert_query,values)
+        review = GetReviewData(sqlpublicip,port)
+        review.put(insert_query,values)
         print("inserted \n")
         return redirect('/')
     
-    m = GetBookDetails(mongopublicip,port)
-    titles = m.getTitles()
-    print (titles)
-
+    book = GetBookDetails(mongopublicip,port)
+    titles = book.getTitles()
     return render_template('addReview.html', titles = titles) 
+
+@app.route('/correlation')
+def correlation():
+   return render_template('correlation.html')
+
+@app.route('/tf-idf')
+def tf_idf():
+   return render_template('tf-idf.html')
+
+@app.route('/corr-calculate',methods=['POST'])
+def corr():
+   #1. extract asin and review text AND CREATE NEW COLUMN REVIEWLENGTH
+   reviews_df = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project"+"/kindle_reviews.csv", header=True, sep=",")
+   reviews = reviews_df.select("asin","reviewText")
+   reviews = reviews.withColumn("reviewText", length(reviews.reviewText))
+   reviews_avg = reviews.groupBy("asin").agg(mean("reviewText").alias("average_reviewLength"))
+
+   print(reviews_avg.head(5))
+   #2. extract asin and price
+   price_df = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project"+"/mongo_price_asin.csv", header=True, sep=",")
+
+#    #3. join based on asin
+   combined_table = price_df.join(reviews_avg, price_df.asin == reviews_avg.asin)
+   combined_table = combined_table.drop('asin')
+   data = combined_table.filter(col("price").isNotNull() & col("average_reviewLength").isNotNull())		# drop None values
+
+   print(data.head(5))
+
+#    #4. preprocess data
+   rdd = data.rdd.map(list)
+   rdd.take(5)
+   n = rdd.count()
+   x = rdd.map(lambda x: float(x[0])).sum()
+   y = rdd.map(lambda x: x[1]).sum()
+   xy = rdd.map(lambda x: float(x[0]) * x[1]).sum()
+   xx = rdd.map(lambda x: float(x[0])**2).sum()
+   yy = rdd.map(lambda x: x[1]**2).sum()
+   #5. corr 
+   numerator = xy - (x * y)/n
+   denominator = math.sqrt(xx - (x * x)/n) * math.sqrt(yy - (y * y)/n)
+   correlation = numerator / denominator
+   print("The Pearson Correlation between price and average review length is: ")
+   print(correlation)
+
+   return render_template('tfidfresult.html', data="The pearson Correlation between price and average review length is: " + correlation)
+
+@app.route('/predict', methods=['POST'])
+def searchda():
+   #  ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
+
+    wordR = request.form['tfidfword']
+    data = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project"+"/kindle_reviews.csv", header=True, sep=",")
+    data = data.na.drop(subset=["reviewText"])
+   
+    tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
+    wordsData = tokenizer.transform(data)
+
+    cv = CountVectorizer(inputCol="words", outputCol="rawFeatures",vocabSize = 2000)
+    model = cv.fit(wordsData)
+    featurizedData = model.transform(wordsData)
+    vocab = model.vocabulary
+
+    idf = IDF(inputCol= "rawFeatures", outputCol="features")
+    idfModel = idf.fit(featurizedData)
+    rescaledData = idfModel.transform(featurizedData)
+    tfidfRow=[]
+    #get tfidf of each row
+    def searchFunc (row,vocab,req):
+       a = {}
+       index = vocab.index(req)
+       array = row.toArray()
+       tfidfWord = 0
+       for i in range(len(row)):
+         if (array[i]!=0  ):
+             tfidf=array[i]
+             word= vocab[i]
+             if(word==req):
+               # print(tfidf)
+               tfidfWord = tfidf
+               a[word]= tfidf
+       tfidfRow.append(tfidfWord)
+       return str(a)
+
+    def map_to_word1(row, vocab):
+      d = {}
+      array = row.toArray()
+      # print(array[0])
+      # print(vocab[0])
+      # print(array[1])
+      # print(vocab[1])
+      for i in range(len(row)):
+         if (array[i] != 0):
+               tfidf = array[i]
+               word = vocab[i]
+               d[word] = tfidf
+      return str(d)
+
+    def map_to_word(vocab):
+      # return udf(lambda row: map_to_word1(row, vocab))
+      if wordR in vocab:
+         return udf(lambda row: searchFunc(row, vocab, wordR))
+      else:
+         return udf(lambda row: map_to_word1(row, vocab))
+
+    output0 = rescaledData.withColumn("features", map_to_word(vocab)(rescaledData.features))
+    output = output0.select("asin","features")
+    output.write.format("csv").save("hdfs://"+masternodeip+':9000'+"/project"+"/result2")
+
+    return render_template('tfidfresult.html', data="The tfidf values for each documents are shown in the terminal. If input word does not exist in dictionary, all tf-idf score will be displayed. Else, tf-idf score of input word will be shown for each document. You can find the result in the /result2 directory by typing hdfs dfs -ls /result2 and hdfs dfs -cat [file-name] to read the csv files")
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=3306)
