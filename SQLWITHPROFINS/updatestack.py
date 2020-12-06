@@ -5,6 +5,7 @@ import sys
 import copy
 # you need the cloud_formation_client for this?
 # why is there a tempfile close below?
+cloud_formation_client = boto3.client('cloudformation',aws_access_key_id=sys.argv[2],aws_secret_access_key=sys.argv[3],aws_session_token=sys.argv[4],region_name=sys.argv[5])
 def updateStack(stack_name='DBPJT3' , n =1,keyname='dbproject'):
  newtemplate = open("finalcloud.json" , 'w')
 
@@ -63,10 +64,10 @@ def updateStack(stack_name='DBPJT3' , n =1,keyname='dbproject'):
      StackName=stack_name,
      Parameters=[{
          'ParameterKey':"KeyName",
-         'ParameterValue':'dbproject'
+         'ParameterValue':'newawskey'
      },],
      TemplateBody=json.dumps(template)
      )
  return response
-
- updateStack('DBPJT3',sys.argv[1],'dbproject')
+print('hi')
+updateStack('DBPJT3',int(sys.argv[1]),'dbproject')
