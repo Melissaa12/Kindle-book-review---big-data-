@@ -17,7 +17,6 @@ export LC_ALL=C
 #create new hadoop user
 sudo adduser hadoop --gecos "" --disabled-password
 #do config for hosts entering privateIP,Assigned DNS name
-#variable here
 sudo tee /etc/hosts << EOF
 127.0.0.1 localhost
 

@@ -415,7 +415,7 @@ def corr():
 
 #    #3. join based on asin
    combined_table = price_df.join(reviews_avg, price_df.asin == reviews_avg.asin)
-#    combined_table = combined_table.drop('asin')
+   combined_table = combined_table.drop('asin')
    data = combined_table.filter(col("price").isNotNull() & col("average_reviewLength").isNotNull())		# drop None values
 
    print(data.head(5))
@@ -491,8 +491,10 @@ def searchda():
       return str(d)
 
     def map_to_word(vocab):
-      # return udf(lambda row: map_to_word1(row, vocab))
-      return udf(lambda row: searchFunc(row, vocab, wordR))
+      if wordR=="":  
+        return udf(lambda row: map_to_word1(row, vocab))
+      else:
+        return udf(lambda row: searchFunc(row, vocab, wordR))
 
     output0 = rescaledData.withColumn("features", map_to_word(vocab)(rescaledData.features))
     output = output0.select("asin","features")

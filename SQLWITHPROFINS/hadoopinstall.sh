@@ -13,7 +13,6 @@ tar zxvf hadoop-3.3.0.tar.gz
 sudo su -c 'sed -i "s/# export JAVA_HOME=.*/export JAVA_HOME=\/usr\/lib\/jvm\/java-8-openjdk-amd64/g" hadoop-3.3.0/etc/hadoop/hadoop-env.sh' hadoop
 
 MASTER=com.avg.master
-#variable here
 WORKERS="com.avg.slave0 com.avg.slave1 com.avg.slave2 com.avg.slave3 com.avg.slave4 com.avg.slave5 com.avg.slave6 com.avg.slave7 com.avg.slave8"
 
 #editing hadoop configs
@@ -108,7 +107,8 @@ echo $MASTER
 echo $WORKERS
 #for each worker copy the worker dns to the workers file
 for ip in ${WORKERS}; do echo -e ${ip} >> hadoop-3.3.0/etc/hadoop/workers ; done
-#distributing the configured lib
+
+#distributing the configured library
 tar czvf hadoop-3.3.0.tgz hadoop-3.3.0
 echo $WORKERS
 for h in $WORKERS ; do

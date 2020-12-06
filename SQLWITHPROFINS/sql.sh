@@ -1,3 +1,4 @@
+#installing dependencies
 sudo apt update
 sudo apt-get update
 sudo apt install libcurl3
@@ -9,11 +10,13 @@ echo "mysql-server mysql-server/root_password_again password pass" | sudo debcon
 sudo apt-get -y install mysql-server
 sudo apt-get -y install zip unzip
 ssh -o StrictHostKeyChecking=no ubuntu@$1 -i $2
-echo "now go to mysql"
+
+#Downloading data using data.sh
 wget https://istd50043.github.io/assets/scripts/get_data.sh
 chmod +x get_data.sh
 ./get_data.sh
 
+#setting SQL config
 echo "Updating mysql configs in /etc/mysql/my.cnf."
 
 sudo tee /etc/mysql/my.cnf << EOF
@@ -28,11 +31,11 @@ EOF
 sudo sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
 echo "Updated mysql bind address in /etc/mysql/my.cnf to 0.0.0.0 to allow external connections."
-
+#Restart to flush changes
 sudo /etc/init.d/mysql stop
 sudo /etc/init.d/mysql start
 
-
+#log into sql user and creates the database,table and fills the table with all data
 sudo mysql -u root -ppass  
 show databases;
 create database if not exists books;
@@ -61,6 +64,7 @@ IGNORE 1 LINES;
 
 SELECT COUNT(asin) FROM books.kindle;
 
+#Create table and populate data for only reviewer and reviwerID
 CREATE TABLE `books`.`reviewers` (
   `reviewerID` VARCHAR(45) NOT NULL,
   `reviewerName` LONGTEXT NULL,
@@ -73,6 +77,7 @@ ON DUPLICATE KEY UPDATE
 
 SELECT COUNT(reviewerID) FROM books.reviewers;
 
+#Create Another user for external connections like for the flask frontend
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'bookreviewer';
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;

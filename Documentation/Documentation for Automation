@@ -2,4 +2,45 @@
 
 Documentation for Automation
 
-createEC2.sh - to collect the user's AWS credentials and also to save them as environmental variables to be used later
+createEC2.sh - to collect the user's AWS credentials as well as the number of datanodes(outside of the default one) and also to save them as environmental variables to be used later
+
+createEC2.py - Creating new cloudformation json for the number of nodes indicated and uses this json to create the stack using boto3
+			 - Creating EC2 Keypair newawskey and writes key.pem into existing dir
+
+sshEC2.py 	 - save outputs of stack such as public and private ip of the respective aws instances
+		  	 - Set up MongoDB Server
+		  	 - call sqlbash.sh to setup the sql server
+		  	 - calls databash.sh to setup the data analytics server
+		  	 - calls websetup.sh to setup the web server
+
+
+Setting up the MongoDB:
+
+
+
+Setting up Sql Server:
+
+sqlbash.sh 	 -  ssh into the sql ec2 instance and calls sql.sh
+
+sql.sh 		 -  gets data using data.sh
+			 -  Does the aws config
+			 -  Creates database, table and fills it will all the data from kindle_reviews.csv
+			 -  Table kindle is the main database with all the data
+			 -  Table reviewers is a table with just the reviewerID and the reviewer name so like a log for reviewers
+			 -  Create another user for external connections like for the flask frontend
+
+Setting up the DataAnalytics Server:
+
+databash.sh  -  general controller for automation for DataAnalytics server across all nodes
+			 -  calls datanew.sh for creating user for each ec2 in hadoop cluster and generate their keys 
+
+datanew.sh   -  for all nodes 
+   			 -  config for etc/hosts
+			 -  create new user hadoop and allow full access 
+			 -  set swapiness
+			 -  generate key
+
+
+
+
+
