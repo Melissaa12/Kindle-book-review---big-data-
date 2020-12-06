@@ -1,0 +1,5 @@
+
+
+Documentation for Automation
+
+createEC2.sh - to collect the user's AWS credentials and also to save them as environmental variables to be used later

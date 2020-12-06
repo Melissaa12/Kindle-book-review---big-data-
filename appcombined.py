@@ -79,7 +79,7 @@ class GetBookDetails():
         except Exception as e:
                 print("Unable to connect to MongoDB: {}".format(e))
 
-    def putValues(self,log):
+    def insertLog(self,log):
         #http://54.91.81.131:3306/log?code=200&method=GET&function=reviews&time=12000
 
         insert_values = {}
@@ -89,6 +89,18 @@ class GetBookDetails():
         insert_values['time'] = log[3]
         r = requests.get("http://"+ self.mongoip + ":" + self.port + "/log", params = insert_values)
         print("done")
+
+    def addBook(self, author, time, title, overview ):
+        #http://34.235.169.17:3306/addbook?author=supp&time=1021&title=yodawg&overview=adogdied
+    
+        new_book = {}
+        new_book['author'] = author
+        new_book['time'] = time
+        new_book['title'] = title
+        new_book['overview'] = overview
+
+        r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/addbook", params = new_book)
+        print("book inserted")
 
     def getTitles(self):
         
@@ -133,39 +145,40 @@ class GetBookDetails():
     def getDetails(self, asin):
 
 
-        default_image = '/static/purple.jpg'
+        default_image = 'static/default_book.png'
         default_overview = 'Overview not available.'
         default_recommended = 'Recommended not available'
 
-        try:
-            data = self.getValues(asin)
+        
+        data = self.getValues(asin)
 
-            if data != None:
-                image, overview, recommended = data[0], data[1], data[2]
-                return (image or default_image, overview or default_overview, recommended or default_recommended)
+        if data != None:
+            image, overview, recommended = data[0], data[1], data[2]
+            return (image or default_image, overview or default_overview, recommended or default_recommended)
 
-            else:
-                return (["Not available","Not available","Not available"])  
+        else:
+            return ([default_image, default_overview, default_recommended])  
 
-        except Exception as e:
-            print("Unable to retrieve data: {}".format(e))
     
     def get(self, asin):
-        try:
-            image, overview, recommended = self.getDetails(asin)
-            default_recos = "No recs"
-            recommended_images_overviews = []
-            for i in range(min(4,len(recommended))):
-                book = recommended[i]
-                #print(book)
-                r_image, r_overview, r_recommended = self.getDetails(book)
-                recommended_images_overviews.append((r_image, r_overview, book))
 
-            #print(image, overview, recommended_images_overviews or default_recos)
-            return (image, overview, recommended_images_overviews or default_recos)
-        
-        except:
-            return {"Message": "Failed to retrieve data"}, 500
+        default_image = 'static/default_book.png'
+        default_overview = 'Overview not available.'
+        default_recommended = 'Recommended not available'
+
+        image, overview, recommended = self.getDetails(asin)
+        recommended_images_overviews = []
+        for i in range(min(4,len(recommended))):
+
+            book = recommended[i]
+            #print(book)
+            r_image, r_overview, r_recommended = self.getDetails(book)
+            recommended_images_overviews.append((r_image, r_overview, book))
+
+        #print(image, overview, recommended_images_overviews or default_recos)
+        return (image or default_image, overview or default_overview, recommended_images_overviews or default_recommended)
+
+    
 
 class GetReviewData():
 
@@ -231,7 +244,7 @@ class GetReviewData():
             current_time = now.strftime("%H:%M:%S")
             log = (200, 'PUT', 'addreview', current_time)
             c = GetBookDetails(mongopublicip, port)
-            c.putValues(log)
+            c.insertLog(log)
             return {"Message": "Inserted"}, 200
 
         except Exception as e:
@@ -270,7 +283,7 @@ class GetReviewData():
             query = "SELECT asin, reviewText FROM kindle"
             cursor.execute(query)
             results = cursor.fetchall()
-            
+           
             fp = open('/Users/varsha/Desktop/asin_review.csv', 'w')
             myFile = csv.writer(fp)
             myFile.writerows(results)
@@ -286,10 +299,10 @@ class GetReviewData():
 
 @app.route('/', methods=['GET'])
 def index_page_landing():
-    r = GetReviewData(sqlpublicip, port)
-    reviews = r.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
-    m = GetBookDetails(mongopublicip, port)
-    bookdisplay = m.getRandom()
+    review = GetReviewData(sqlpublicip, port)
+    reviews = review.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
+    book = GetBookDetails(mongopublicip, port)
+    bookdisplay = book.getRandom()
     #print(reviews)
     return render_template('index.html',reviews=reviews, book_display = bookdisplay)
     #return render_template('index3.html')
@@ -297,17 +310,39 @@ def index_page_landing():
 @app.route('/search', methods=['GET'])
 def search():
     title = request.args.get('title') 
-    
+    search_option = request.args.get('searchoption')
+    search_results = (None, None, None)
     if title:
         title = quote(title)
-        m = GetBookDetails(mongopublicip, port)
-        search_results = m.searchTitle(title)
-        print(search_results)
-        return redirect('search.html',search = search_results)
-    #print(reviews)
-    return render_template('search.html', search = (None,None,None))
-    #return render_template('index3.html')
+        book = GetBookDetails(mongopublicip, port)
+        search_results = book.searchTitle(title)
+        #session['results'] = search_results
+        return redirect('/search')
 
+    return render_template('search.html', search = search_results)
+
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+
+    title = request.args.get('booktitle') 
+    author = request.args.get('author') 
+    time = current_time 
+    overview = request.args.get('summary') 
+
+    if author and time and title and overview:
+        print("ok")
+        author = quote(author)
+        time = quote(time)
+        title = quote(title)
+        overview = quote(overview)
+        book = GetBookDetails(mongopublicip, port)
+        book.addBook(author, time, title, overview)
+        return redirect('/')
+
+    return render_template('addNewBookReview.html')
 
 @app.route('/book/<string:asin>')
 def hello_world(asin):
@@ -324,7 +359,7 @@ def hello_world(asin):
 def create_query(title, summary, genre, rating, review):
     query = ''
     query = "INSERT INTO kindle (idx, asin, overall, reviewText, summary, reviewerID) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (None,'ABC45678', rating, review, summary, 'A1F6404F1VG29J')
+    values = (None,'ABC45678', rating, review, summary, 'A1UG4Q4D3OAH3A')
     print('query created')
     return query,values
 
@@ -349,15 +384,13 @@ def add_review():
         print("ok")
         insert_query, values = create_query(title,summary,genre,rating,review)
         print(insert_query,values)
-        r = GetReviewData(sqlpublicip,port)
-        r.put(insert_query,values)
+        review = GetReviewData(sqlpublicip,port)
+        review.put(insert_query,values)
         print("inserted \n")
         return redirect('/')
     
-    m = GetBookDetails(mongopublicip,port)
-    titles = m.getTitles()
-    # print (titles)
-
+    book = GetBookDetails(mongopublicip,port)
+    titles = book.getTitles()
     return render_template('addReview.html', titles = titles) 
 
 @app.route('/correlation')
