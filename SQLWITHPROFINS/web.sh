@@ -24,7 +24,7 @@ sudo sh -c 'echo "hadoop ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/90-hadoop'
 sudo su hadoop
 sudo apt-get update
 sudo apt-get install git
-sudo git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git
+sudo git clone https://dbgroup202020:dbprojectpassword@github.com/ryangen97/DBProject.git 
 python3 -V
 yes Y|sudo apt install python3-venv
 sudo python3 -m venv venv --without-pip --system-site-packages

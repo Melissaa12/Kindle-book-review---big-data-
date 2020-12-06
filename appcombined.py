@@ -28,8 +28,7 @@ from pyspark import SparkContext
 from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
 from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
-from pyspark.sql.functions import udf, col
-from pyspark.sql.functions import *
+from pyspark.sql.functions import udf, col,mean
 from pyspark.sql.functions import length
 from pyspark.mllib.feature import HashingTF
 from pyspark.sql.types import StringType
@@ -383,7 +382,7 @@ def corr():
 
 #    #3. join based on asin
    combined_table = price_df.join(reviews_avg, price_df.asin == reviews_avg.asin)
-   combined_table = combined_table.drop('asin')
+#    combined_table = combined_table.drop('asin')
    data = combined_table.filter(col("price").isNotNull() & col("average_reviewLength").isNotNull())		# drop None values
 
    print(data.head(5))

@@ -10,7 +10,7 @@ export PATH=\$PATH:/opt/hadoop-3.3.0/sbin
 EOF
 #Shifting required files into HDFS
 source ~/.bashrc
-sudo git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git 
+sudo git clone https://dbgroup202020:dbprojectpassword@github.com/ryangen97/DBProject.git 
 wget https://istd50043.github.io/assets/scripts/get_data.sh
 chmod +x get_data.sh
 ./get_data.sh
