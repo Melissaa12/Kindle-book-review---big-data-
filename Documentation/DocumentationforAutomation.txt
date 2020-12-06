@@ -1,0 +1,103 @@
+
+
+Documentation for Automation:
+
+IN path DBProject/SQLWITHPROFINS
+
+createEC2.sh - to collect the user's AWS credentials as well as the number of datanodes(outside of the default one) and also to save them as environmental variables to be used later
+
+createEC2.py - Creating new cloudformation json for the number of nodes indicated and uses this json to create the stack using boto3
+			 - Creating EC2 Keypair newawskey and writes key.pem into existing dir
+
+sshEC2.py 	 - save outputs of stack such as public and private ip of the respective aws instances
+		  	 - Set up MongoDB Server
+		  	 - call sqlbash.sh to setup the sql server
+		  	 - calls databash.sh to setup the data analytics server
+		  	 - calls websetup.sh to setup the web server
+tweakJson.py - edits the cloudformation json file such that it fits the number of nodes that is requested
+
+#############################################Setting up the MongoDB#################################################################
+
+
+
+#############################################Setting up Sql Server#################################################################
+
+sqlbash.sh 	 -  ssh into the sql ec2 instance and calls sql.sh
+
+sql.sh 		 -  gets data using data.sh
+			 -  Does the aws config
+			 -  Creates database, table and fills it will all the data from kindle_reviews.csv
+			 -  Table kindle is the main database with all the data
+			 -  Table reviewers is a table with just the reviewerID and the reviewer name so like a log for reviewers
+			 -  Create another user for external connections like for the flask frontend
+			 -  calls hadoopinstall.sh for the main node and hadoopinstallother.sh
+			 -  calls hadoopinstall2.sh for starting up of hadoop and also spark installation of the masternode 
+			 -  calls sparkother.sh for all other datanodes
+			 -  calls sparkrun.sh for masternode to start running spark
+			 -  calls sparkrun2.sh for masternode to check that spark is running with an example and also shifting all the required files we need for the system to HDFS
+Setting up the DataAnalytics Server:
+
+databash.sh  -  general controller for automation for DataAnalytics server across all nodes
+			 -  calls datanew.sh for creating user for each ec2 in hadoop cluster and generate their keys
+			 -  use workaround 2 to share the keys 
+			 -  call datajava.sh to download java for each node
+
+datanew.sh   -  for all nodes 
+   			 -  config for etc/hosts
+			 -  create new user hadoop and allow full access 
+			 -  set swapiness
+			 -  generate key
+
+datajava.sh  -  download java for each node
+
+hadoopinstall.sh - Installing hadoop and making changes to the hadoop configuration in the masternode + distribute the configured library
+
+hadoopinstallother.sh  - Installation of hadoop on other datanodes
+
+hadoopinstall2.sh - Installallation final steps for hadoop
+				  - Start up hadoop cluster
+				  - Spark Installation
+				  - Spark Configuration
+				  - Configuration of slaves
+				  - Deployment
+				  - Installation on all nodes
+sparkother.sh     - Installation of spark for the datanodes 
+
+sparkrun.sh       - start running spark 
+
+sparkrun2         - Shift all required files into HDFS
+				  - run an example to check if spark is working
+
+#############################################Setting up webserver#################################################################
+
+websetup.sh - calls web.sh and ssh into the webserver
+
+web.sh 		- sets up all dependencies for the flask server and hadoop frontend portion
+			- starts up frontend webserver
+
+app.py(dbproject/app.py) - frontend flask code
+
+#############################################Others#################################################################
+deletestack.sh - calls deletestack.py with the saved aws configurations
+deletestack.py - deletes the stack and the aws key that was created
+
+dependencies.sh - automates setup for the freshinstance to run all scripts
+
+shudownhadoopcluster.sh - bashscipt to call shutdown.sh
+shutdown.sh - shutdown both the hadoop and spark cluster
+
+updateawscredentials.sh - gives an interface to update your aws credentials if they have expired
+
+updatestack.py - can remove and create new EC2 instances into the stack(for datanodes scaling)
+
+
+
+
+
+
+
+
+
+
+
+

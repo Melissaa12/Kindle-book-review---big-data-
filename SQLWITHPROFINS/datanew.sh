@@ -47,7 +47,6 @@ sudo su hadoop
 #set swapiness
 sudo sysctl vm.swappiness=10
 
-
 #key gen
 sudo apt-get install -y ssh
 ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa

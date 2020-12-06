@@ -1,0 +1,30 @@
+MongoDB Documentation
+
+Our project consists of 2 mongoDB databases. 1 is for the metadata from the Kindle store and 1 is for user logging purposes.
+
+We download the metadata JSON from the link provided by the Course Project Description page. 
+After setting up MongoDB and the dependancies on the EC2 instance, we import the JSON onto MongoDB using
+"mongoimport --db kindle --collection metadata --file meta_Kindle_Store.json --legacy"
+
+Once that is done, we can install our python packages like Flask and PyMongo to setup a flask server on the MongoDB instance. 
+The purpose of this flask server is to provide API endpoints which allow you to interact with the MongoDB database. 
+The code is located in the runMongo.py file provided in https://github.com/Hsengiv2000/BigdataMongo/blob/main/runmongo.py
+
+We run nohup python BigdataMongo/runmongo.py and write the output to a log.txt file.
+
+API ENDPOINTS(ALL GET REQUESTS)
+/getlog -  Returns the list of logs you have logged so far
+/log - Allows you to insert a log. Params:  method, function, time and code. eg: ip:3306/log?code=200&method=GET&function=addreviews&time=120002
+/<key>/<value> - This is the universal search function for the kindle database. eg: ip:3306/asin/BSAHSH21B or ip:3306/author/jk+rowling or ip:3306/title/harry%20Potter
+It will return the Image URL for the book cover, book description/overview and the list of books someone bought alongside this book, each in string form, seperated by '####'
+eg: http:picaso.com/harrypoterimage.jpg####Story of a boy who overcame a dark wizard####['B372DG12H' , 'B818373HGY'] (this the list of also boughts)
+/titles - Returns a string with all the titles in the database seperated by '####'. eg: ip:3306/titles  (harrypotter####narnia####StarWars####)
+/rando - This returns a string with 30 random ASINs , each seperated by '####' 
+/addbook - Allows you to add a new book to the MongoDB kindle database. Eg: ip:3306/addbook?author=GRRMartin&time=B12841HK&title=Game%20Of%20Thrones&overview=The%20Story%of%20a%20wall%20and%20winter
+/genre -  Creates a new genredb (not necessary, but is more of an admin tool). This has data in the format :{asin: asinValue, categories: [genre1, genre2, genre3...]} where each genre is the book's genre (books have multiple genre). 
+The user has to pass the genre query eg: ip:3306/genre?genre=Mystery, this will return the Asin of all the books with Mystery genre.
+/checkgenre - This shows you the current genredb. this is not used for the client, but is more of a logging tool
+
+All these endpoints are accessed by the front-end code to display the different books in the webpage. However if you know the IP, you can retrieve information by simply going to your webbrowser and making the request.
+
+This EC2 instance is created using BOTO3, SSHd into with the help of Paramiko. We install various dependancies, clone the runMongo.py and run it in the background.

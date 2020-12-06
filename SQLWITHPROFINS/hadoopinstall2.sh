@@ -5,14 +5,10 @@ sudo mkdir -p /mnt/hadoop/namenode/hadoop-${USER}
 sudo chown -R hadoop:hadoop /mnt/hadoop/namenode
 sudo su hadoop
 
-
-
 #starting up hadoop
 yes Y|/opt/hadoop-3.3.0/bin/hdfs namenode -format
 /opt/hadoop-3.3.0/sbin/start-dfs.sh && /opt/hadoop-3.3.0/sbin/start-yarn.sh
 /opt/hadoop-3.3.0/bin/hdfs dfsadmin -report
-
-
 
 #spark installation
 cd ..

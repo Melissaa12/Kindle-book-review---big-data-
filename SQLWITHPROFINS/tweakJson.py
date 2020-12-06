@@ -5,8 +5,6 @@ import copy
 def tweakStack(stack_name='DBPJT3'  , n = 0 ):
 
  template_file_location = "./finalcloud.json"
- #cloud_formation_client = boto3.client('cloudformation',aws_access_key_id=aws_access_key_id,aws_secret_access_key=aws_secret_access_key,aws_session_token=aws_session_token,region_name="us-east-1")
- # # read entire file as yaml
  with open(template_file_location, 'r') as content_file:
      content = json.load(content_file)
  tempfile = open("./testsavenew.json" , 'w')
@@ -42,7 +40,6 @@ def tweakStack(stack_name='DBPJT3'  , n = 0 ):
                 ]
             }
         }       
- #json.dump(template, newtemplate, indent=4)
   
  for i in range(0, n):
   content["Resources"]["Slave"+str(1+i)] = tempVal
@@ -50,8 +47,6 @@ def tweakStack(stack_name='DBPJT3'  , n = 0 ):
   tempOutput2["Value"]["Fn::GetAtt"][0] = "Slave"+str(1+i)
   content["Outputs"]["Slave"+str(1+i)+"IP"] = copy.deepcopy(tempOutput)
   content["Outputs"]["Slave"+str(1+i)+"PriIP"] = copy.deepcopy(tempOutput2)
-
- #content = json.dumps(content)
  
 
 

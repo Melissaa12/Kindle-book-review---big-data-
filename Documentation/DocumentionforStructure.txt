@@ -1,0 +1,22 @@
+Documention for Structure:
+
+Design: General parts
+- Flask Frontend
+- MYSQL DataBase for storing reviews
+- MongoDB for logs
+- MongoDB for metadata
+- Hadoop/Spark Cluster
+- Security Groups
+
+An Automation script is created to create a stack of this EC2 Instances with their security groups. This is done by using cloudformation where boto creates the stack according to the format of the cloudforamtion json script.
+
+Once the EC2 instances are all set up, configure each of the instances seperately using a combination of bash scipts and python scripts, you can find out more in the Documentation for Automation file.
+
+Frontend is hosted using flask and is a website where you can look at the books and their reviews for books that are included in the database, add books, sort the books and give reviews for the existing books. You can also use the search bar to search for certain books by author or name.
+More information can be found in the Documentation for frontend features
+
+There is also an analytics tab where you can calculate correlation and tf-idf and you can see the returning of the correlation score once it has finished processing, the correlation results will be stored into HDFS for storage and access. This makes use of the hadoop/spark cluster to calcualte these scores.
+More information can be found in Documentation for data analytics
+
+
+

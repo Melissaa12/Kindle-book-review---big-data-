@@ -28,7 +28,7 @@ python3 updatestack.py <numberofdatanodesotherthanslave0> $ACCESS_KEY_ID $AWS_SE
 sh shutdownhadoopcluster.sh $MASTERIP
 
 #If it doesnt work check the aws coordinates if they have expired#
-#if yes reenter your aws coordinates like this#
+#if yes re-enter your aws coordinates like this#
 
  1)sh updateawscredentials.sh 
  2)enter your updated credentials
