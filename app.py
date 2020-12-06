@@ -478,7 +478,7 @@ def corr():
    print("The Pearson Correlation between price and average review length is: ")
    print(correlation)
 
-   return render_template('tfidfresult.html', data="The pearson Correlation between price and average review length is: " + correlation)
+   return render_template('tfidfresult.html', data="The pearson Correlation between price and average review length is: " + str(correlation))
 
 @app.route('/predict', methods=['POST'])
 def searchda():
@@ -520,10 +520,7 @@ def searchda():
     def map_to_word1(row, vocab):
       d = {}
       array = row.toArray()
-      # print(array[0])
-      # print(vocab[0])
-      # print(array[1])
-      # print(vocab[1])
+
       for i in range(len(row)):
          if (array[i] != 0):
                tfidf = array[i]
@@ -532,7 +529,6 @@ def searchda():
       return str(d)
 
     def map_to_word(vocab):
-      # return udf(lambda row: map_to_word1(row, vocab))
       if wordR in vocab:
          return udf(lambda row: searchFunc(row, vocab, wordR))
       else:
@@ -545,4 +541,4 @@ def searchda():
     return render_template('tfidfresult.html', data="The tfidf values for each documents are shown in the terminal. If input word does not exist in dictionary, all tf-idf score will be displayed. Else, tf-idf score of input word will be shown for each document. You can find the result in the /result2 directory by typing hdfs dfs -ls /result2 and hdfs dfs -cat [file-name] to read the csv files")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=3306)
