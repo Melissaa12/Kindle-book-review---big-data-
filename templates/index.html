@@ -48,34 +48,34 @@
         </div>
     </div>
 
-
     <div style="padding: 60px">
         <div>
           <div class="row">
-            <div class="col-10">
+            <div class="col">
               <h2>Browse books</h2>
             </div>
 
-            <div class="col">
-              <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Sort by
-                  </button>
-                  <select class="form-control" id="genretype">
-                    <option>Mystery, Thriller & Suspense</option>
-                    <option>Health, Fitness & Dieting</option>
-                    <option>Worship & Devotion</option>
-                    <option>Gay & Lesbian</option>
-                    <option>Science Fiction</option>
-                    <option>Cookbooks, Food & Win</option>
-                    <option>Comics & Graphic Novels</option>
-                    <option>Politics & Social Sciences</option>
-                    <option>Psychology & Counseling</option>
-                    <option>Love & Romance</option>
-                    <option>Medical Books'</option>
-                  </select>
+            <form class="col" id="sortgenre">
+              <div class="form-group row">
+                <label for="genre" class="col-sm-2 col-form-label">Genre</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="genre" name = "genre" onclick="submitsort">
+                      <option>Mystery, Thriller & Suspense</option>
+                      <option>Literature & Fiction</option>
+                      <option>Health, Fitness & Dieting</option>
+                      <option>Worship & Devotion</option>
+                      <option>Books</option>
+                      <option>Science Fiction</option>
+                      <option>Cookbooks, Food & Wine</option>
+                      <option>Comics & Graphic Novels</option>
+                      <option>Politics & Social Sciences</option>
+                      <option>Psychology & Counseling</option>
+                      <option>Love & Romance</option>
+                      <option>Medical Books'</option>
+                    </select>
                 </div>
-            </div>
+              </div>
+            </form>
           </div>
             <br/>
 
@@ -106,52 +106,8 @@
 </body>
 </html>
 
-<style lang="css">
- .dropdown-submenu {
-    position: relative;
-}
-
-.dropdown-submenu>.dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-top: -6px;
-    margin-left: -1px;
-    -webkit-border-radius: 0 6px 6px 6px;
-    -moz-border-radius: 0 6px 6px;
-    border-radius: 0 6px 6px 6px;
-}
-
-.dropdown-submenu:hover>.dropdown-menu {
-    display: block;
-}
-
-.dropdown-submenu>a:after {
-    display: block;
-    content: " ";
-    float: right;
-    width: 0;
-    height: 0;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 5px 0 5px 5px;
-    border-left-color: #ccc;
-    margin-top: 5px;
-    margin-right: -10px;
-}
-
-.dropdown-submenu:hover>a:after {
-    border-left-color: #fff;
-}
-
-.dropdown-submenu.pull-left {
-    float: none;
-}
-
-.dropdown-submenu.pull-left>.dropdown-menu {
-    left: -100%;
-    margin-left: 10px;
-    -webkit-border-radius: 6px 0 6px 6px;
-    -moz-border-radius: 6px 0 6px 6px;
-    border-radius: 6px 0 6px 6px;
-}
-</style>
+<script>
+  function submitsort(){
+    document.getElementById("sortgenre").submit();
+  }
+</script>
