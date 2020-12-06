@@ -40,17 +40,18 @@ Term 6 Database Project Kindle
 ## ONLY SHUTDOWN HADOOP
 
 1)```sh shutdownhadoopcluster.sh $MASTERIP```
+##
 
+
+## To update aws credentials in the case of credential expiry
 Note if either doesnt work it could be due to the aws credentials being expired(especially aws educate)
 
-to update aws credentials in the case of credential expiry:
+1)```sh updateawscredentials.sh```
+ 
+2)```enter your updated credentials```
+ 
+3)```source /etc/environment```
 
-##
- 1)```sh updateawscredentials.sh```
- 
- 2)```enter your updated credentials```
- 
- 3)```source /etc/environment```
 
 ### OTHER COMMENTS
 if you exited the web flask server and want to start it again, you need to ensure port connection are cleared with
