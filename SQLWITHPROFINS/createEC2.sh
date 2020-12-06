@@ -37,7 +37,7 @@ AWS_SESSION_TOKEN=${aws_session_token}
 REGION=${region}
 EOF
 # source /etc/environment
-source <(sudo cat /etc/environment)
+
 echo $AWS_SESSION_TOKEN
 echo $KEYNAME
 
