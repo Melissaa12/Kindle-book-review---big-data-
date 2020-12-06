@@ -16,41 +16,25 @@ import string
 import html
 import csv
 import requests
-import sys
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from datetime import datetime
-import numpy as np
-import pandas as pd
-import math 
+from urllib.parse import quote
+
+
+
 import sys
-from pyspark import SparkContext
-from pyspark import SparkConf
-from pyspark.sql.session import SparkSession
-from pyspark.ml.feature import CountVectorizer, IDF, Tokenizer
-from pyspark.sql.functions import udf, col
-from pyspark.mllib.feature import HashingTF
-from pymongo import MongoClient
-from pyspark.sql.types import StringType
-from pyspark.sql.functions import *
-from pyspark.sql.functions import length
-conf=SparkConf()
-masternodeip = sys.argv[3]
-conf.set("spark.driver.memory", "5g")
-sc = SparkContext.getOrCreate(conf)
-sc.setCheckpointDir("hdfs://"+masternodeip+':9000'+"/project")
-spark = SparkSession(sc)
 
-masternodeip = sys.argv[3]
-print('This is the mongo public IP Address' +  sys.argv[2])
-mongopublicip = sys.argv[1]
-mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-print('This is the sql public IP Address' +  sys.argv[1])
-sqlpublicip = sys.argv[2]
+#print('This is the mongo public IP Address' +  sys.argv[2])
+#mongopublicip = sys.argv[1]
+#mongopublicipadd = 'http://' + mongopublicip + '/asin/'
 
-# mongopublicip = '54.198.27.228'
-# sqlpublicip = '34.230.26.152'
+#print('This is the sql public IP Address' +  sys.argv[1])
+#sqlpublicip = sys.argv[2]
+
+mongopublicip = '54.174.31.194'
+sqlpublicip = '54.224.212.35'
 port='3306'
 
 app = Flask(__name__)
@@ -66,6 +50,7 @@ class GetBookDetails():
     def getValues(self, asin):
 
         try:
+            #r = requests.get('http://3.238.100.151:3306/asin/'+asin)
             r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/asin/" + asin)
             imgUrl = r.text.strip().split("####")[0]
             overview = r.text.strip().split("####")[1]
@@ -78,44 +63,58 @@ class GetBookDetails():
 
         except Exception as e:
                 print("Unable to connect to MongoDB: {}".format(e))
-    def putValues(self,log):
-            #http://54.91.81.131:3306/log?code=200&method=GET&function=reviews&time=12000
 
-            insert_values = {}
-            insert_values['code'] = log[0]
-            insert_values['method'] = log[1]
-            insert_values['function'] = log[2]
-            insert_values['time'] = log[3]
-            r = requests.get("http://"+ self.mongoip + ":" + self.port + "/log", params = insert_values)
-            print("done")
+    def putValues(self,log):
+        #http://54.91.81.131:3306/log?code=200&method=GET&function=reviews&time=12000
+
+        insert_values = {}
+        insert_values['code'] = log[0]
+        insert_values['method'] = log[1]
+        insert_values['function'] = log[2]
+        insert_values['time'] = log[3]
+        r = requests.get("http://"+ self.mongoip + ":" + self.port + "/log", params = insert_values)
+        print("done")
 
     def getTitles(self):
-            
-            url = "http://" + self.mongoip + ":" + self.port + "/titles"
-            html = urlopen(url).read()
-            soup = BeautifulSoup(html, features="html.parser")
+        
+        url = "http://" + self.mongoip + ":" + self.port + "/titles"
+        html = urlopen(url).read()
+        soup = BeautifulSoup(html, features="html.parser")
 
-            # get text
-            text = soup.get_text()
-            titles = text.split('####')
+        # get text
+        text = soup.get_text()
+        titles = text.split('####')
 
-            return titles
+        return titles
 
     def getRandom(self):
-            url = "http://" + self.mongoip + ":" + self.port + "/rando"
-            html = urlopen(url).read()
-            soup = BeautifulSoup(html, features="html.parser")
+        url = "http://" + self.mongoip + ":" + self.port + "/rando"
+        html = urlopen(url).read()
+        soup = BeautifulSoup(html, features="html.parser")
 
-            # get text
-            text = soup.get_text()
-            random_books = text.split('####')
+        # get text
+        text = soup.get_text()
+        random_books = text.split('####')
 
-            book_display = []
-            for book in random_books:
-                image, overview, recommended = self.getDetails(book)
-                book_display.append((image, overview, book))
-                
-            return book_display
+        book_display = []
+        for book in random_books:
+            image, overview, recommended = self.getDetails(book)
+            book_display.append((image, overview, book))
+            
+        return book_display
+
+    def searchTitle(self,title):
+        r =  requests.get("http://"+ self.mongoip + ":" + self.port + "/asin/" + title)
+        imgUrl = r.text.strip().split("####")[0]
+        overview = r.text.strip().split("####")[1]
+        ab = r.text.strip().split("####")[2]
+        ab = ab.strip("]").strip("[").strip().split(",")
+        ab = [i.strip().strip("u'").strip("'") for i in ab]
+        #overview = unquote(overview)
+        overview = html.unescape(overview)
+        return imgUrl, overview, ab
+
+
     def getDetails(self, asin):
 
 
@@ -124,9 +123,6 @@ class GetBookDetails():
         default_recommended = 'Recommended not available'
 
         try:
-            #cursor = mycol.find_one({"asin": asin})
-            #jsonstring = dumps(cursor, default=default)
-            #data = json.loads(jsonstring)
             data = self.getValues(asin)
 
             if data != None:
@@ -155,6 +151,7 @@ class GetBookDetails():
         
         except:
             return {"Message": "Failed to retrieve data"}, 500
+
 class GetReviewData():
 
     def __init__(self, sqlip, port):
@@ -214,7 +211,6 @@ class GetReviewData():
         try:
             cursor = connection.cursor()
             cursor.execute(insert_query,values)
-            
             connection.commit()
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
@@ -246,7 +242,7 @@ class GetReviewData():
             r = GetBookDetails(mongopublicip, port)
             imgUrl, overview, ab = r.getValues(asin)
             all_review_data.append((imgUrl, reviewText, asin))
-        # print(all_review_data)
+        #print(all_review_data)
         cursor.close()
         #connection.close()
         return all_review_data
@@ -275,56 +271,29 @@ class GetReviewData():
 
 @app.route('/', methods=['GET'])
 def index_page_landing():
-    r = GetReviewData(sqlpublicip,port)
+    r = GetReviewData(sqlpublicip, port)
     reviews = r.getAllReviews(r_id = 'A1UG4Q4D3OAH3A')
     m = GetBookDetails(mongopublicip, port)
     bookdisplay = m.getRandom()
     #print(reviews)
     return render_template('index.html',reviews=reviews, book_display = bookdisplay)
     #return render_template('index3.html')
-@app.route('/corr-calculate',methods=['POST'])
-def corr():
-   #1. extract asin and review text AND CREATE NEW COLUMN REVIEWLENGTH
-   reviews_df = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project/kindle_reviews.csv", header=True, sep=",")
-   reviews = reviews_df.select("asin","reviewText")
-   reviews = reviews.withColumn("reviewText", length(reviews.reviewText))
-   reviews_avg = reviews.groupBy("asin").agg(mean("reviewText").alias("average_reviewLength"))
 
-   print(reviews_avg.head(5))
-   #2. extract asin and price
-   price_df = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project/mongo_price_asin.csv", header=True, sep=",")
-
-#    #3. join based on asin
-   combined_table = price_df.join(reviews_avg, price_df.asin == reviews_avg.asin)
-   combined_table = combined_table.drop('asin')
-   data = combined_table.filter(col("price").isNotNull() & col("average_reviewLength").isNotNull())  # drop None values
-
-   print(data.head(5))
-
-#    #4. preprocess data
-   rdd = data.rdd.map(list)
-   rdd.take(5)
-   n = rdd.count()
-   x = rdd.map(lambda x: float(x[0])).sum()
-   y = rdd.map(lambda x: x[1]).sum()
-   xy = rdd.map(lambda x: float(x[0]) * x[1]).sum()
-   xx = rdd.map(lambda x: float(x[0])**2).sum()
-   yy = rdd.map(lambda x: x[1]**2).sum()
-   #5. corr 
-   numerator = xy - (x * y)/n
-   denominator = math.sqrt(xx - (x * x)/n) * math.sqrt(yy - (y * y)/n)
-   correlation = numerator / denominator
-   print("The Pearson Correlation between price and average review length is: ")
-   print(correlation)
+@app.route('/search', methods=['GET'])
+def search():
+    title = request.args.get('title') 
+    
+    if title:
+        title = quote(title)
+        m = GetBookDetails(mongopublicip, port)
+        search_results = m.searchTitle(title)
+        print(search_results)
+        return redirect('search.html',search = search_results)
+    #print(reviews)
+    return render_template('search.html', search = (None,None,None))
+    #return render_template('index3.html')
 
 
-   return render_template('tfidfresult.html', data=correlation)
-@app.route('/correlation')
-def correlation():
-   return render_template('correlation.html')
-@app.route('/tf-idf')
-def tf_idf():
-   return render_template('tf-idf.html')
 @app.route('/book/<string:asin>')
 def hello_world(asin):
    #api.add_resource(BookDetail,'/book/<string:asin>')
@@ -341,115 +310,40 @@ def create_query(title, summary, genre, rating, review):
     query = ''
     query = "INSERT INTO kindle (idx, asin, overall, reviewText, summary, reviewerID) VALUES (%s, %s, %s, %s, %s, %s)"
     values = (None,'ABC45678', rating, review, summary, 'A1F6404F1VG29J')
+    print('query created')
     return query,values
 
 
 def getArgs():
-    
 
     title = request.args.get('booktitle') 
     summary = request.args.get('summary') 
     genre = request.args.get('genre') 
     rating = request.args.get('inlineRadioOptions') 
     review = request.args.get('review') 
+
     return (title,summary,genre,rating,review)
+
 
 @app.route('/add-review',methods =["GET","POST"])
 def add_review():
 
-    default_title = "NO TITLE"
-    default_summary = "NO SUMMARY"
-    default_genre = "NO GENRE"
-    defult_rating = "0"
-    default_review = "NO REVIEW"
-
     title,summary,genre,rating,review = getArgs()
 
     if title and summary and genre and rating and review:
+        print("ok")
         insert_query, values = create_query(title,summary,genre,rating,review)
+        print(insert_query,values)
         r = GetReviewData(sqlpublicip,port)
         r.put(insert_query,values)
         print("inserted \n")
         return redirect('/')
+    
     m = GetBookDetails(mongopublicip,port)
     titles = m.getTitles()
+    print (titles)
 
-    #title = request.args.get('booktitle') or default_title
-    #summary = request.args.get('summary') or default_summary
-    #genre = request.args.get('genre') or default_genre
-    #rating = request.args.get('inlineRadioOptions') or defult_rating
-    #review = request.args.get('review') or default_review
-
-    #review = request.args.get('review')
-    #print(title,genre,image,rating,review)
-    
-
-    return render_template('addReview.html') 
-
-
-@app.route('/predict', methods=['POST'])
-def search():
-   # df = totalReviews()
-   
-   # ,asin,helpful,overall,reviewText,reviewTime,reviewerID,reviewerName,summary,unixReviewTime
-
-   # wordR = request.form['tfidfword']
-   data = spark.read.csv("hdfs://"+masternodeip+':9000'+"/project/kindle_reviews.csv", header=True, sep=",")
-   data = data.na.drop(subset=["reviewText"])
-
-   tokenizer = Tokenizer(inputCol="reviewText",outputCol="words")
-   wordsData = tokenizer.transform(data)
-
-   cv = CountVectorizer(inputCol="words", outputCol="rawFeatures",vocabSize = 2000)
-   model = cv.fit(wordsData)
-   featurizedData = model.transform(wordsData)
-   vocab = model.vocabulary
-
-   idf = IDF(inputCol= "rawFeatures", outputCol="features")
-   idfModel = idf.fit(featurizedData)
-   resultData = idfModel.transform(featurizedData)
-   tfidfRow=[]
-   #get tfidf of each row
-   def searchFunc (row,vocab,req):
-      a = {}
-      index = vocab.index(req)
-      array = row.toArray()
-      tfidfWord = 0
-      for i in range(len(row)):
-         if (array[i]!=0  ):
-            tfidf=array[i]
-            word= vocab[i]
-            if(word==req):
-            # print(tfidf)
-               tfidfWord = tfidf
-               a[word]= tfidf
-      tfidfRow.append(tfidfWord)
-      return str(a)
-
-   def searchFunc1(row, vocab):
-      d = {}
-      array = row.toArray()
-      # print(array[0])
-      # print(vocab[0])
-      # print(array[1])
-      # print(vocab[1])
-      for i in range(len(row)):
-         if (array[i] != 0):
-            tfidf = array[i]
-            word = vocab[i]
-            d[word] = tfidf
-      return str(d)
-
-   def map_to_word(vocab):
-      return udf(lambda row: searchFunc1(row, vocab))
-      # return udf(lambda row: searchFunc(row, vocab, wordR))
-
-   output0 = resultData.withColumn("features", map_to_word(vocab)(resultData.features))
-   output = output0.select("asin","reviewerID","features")
-   output.write.format("csv").save("hdfs://"+masternodeip+':9000' + "/result7")
-
-   return render_template('tfidfresult.html', data="placeholder")
-
+    return render_template('addReview.html', titles = titles) 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3306)
+    app.run()
