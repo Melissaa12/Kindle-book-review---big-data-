@@ -40,8 +40,10 @@ source /etc/environment
 echo $AWS_SESSION_TOKEN
 echo $KEYNAME
 
+
  . venv/bin/activate
 # installing requirements 
+export LC_ALL=C
 pip3 install boto3
 pip3 install pyyaml
 yes Y|sudo apt install python-pip3

@@ -6,6 +6,7 @@ git clone https://ryangen97:Sherene31071997@github.com/ryangen97/DBProject.git
 cd DBProject
 cd SQLWITHPROFINS
 sh dependencies.sh
+ . venv/bin/activate
 sh createEC2.sh
 
 Enter Credentials
