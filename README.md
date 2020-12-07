@@ -52,6 +52,10 @@ Note if either doesnt work it could be due to the aws credentials being expired(
  
 3)```source /etc/environment```
 
+## To access Webpage
+enter this into your browser <WEBIPpublicaddress>:3306
+  
+(This is generated and indicated near the end of the terminal headed by 'please enter this into your browser')
 
 ### OTHER COMMENTS
 if you exited the web flask server and want to start it again, you need to ensure port connection are cleared with
