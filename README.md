@@ -25,7 +25,7 @@ Term 6 Database Project Kindle
 
 11) #Enter AWS Credentials#
 
-
+## NOTE: if you rerun the code twice and didnt use the deletestack function you need to delete the stack DBPJT3 and the aws key 'newawskey' on your aws account before running again.
 
 # TEARDOWN
 
